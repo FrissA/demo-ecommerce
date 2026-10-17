@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import BreadcrumbCheckout from "@/components/checkout-page/BreadcrumbCheckout";
 import { Button } from "@/components/ui/button";
@@ -112,7 +113,7 @@ export default function CreateAccountPage() {
                 Register to continue
               </CardTitle>
               <CardDescription>
-                An account is required to place an order.
+                Optional. You can also check out as a guest.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -149,12 +150,19 @@ export default function CreateAccountPage() {
                 </Field>
               </FieldGroup>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex-col gap-3">
               <Button
                 type="submit"
                 className="text-sm md:text-base font-medium rounded-full w-full h-[54px] md:h-[60px]"
               >
                 Create account
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="text-sm md:text-base font-medium rounded-full w-full h-[54px] md:h-[60px]"
+              >
+                <Link href="/checkout">Continue as guest</Link>
               </Button>
             </CardFooter>
           </form>
