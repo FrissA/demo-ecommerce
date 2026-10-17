@@ -19,6 +19,7 @@ export type Order = {
   items: CartItem[];
   subtotal: number;
   discount: number;
+  deliveryFee: number;
   total: number;
   shipping: ShippingInfo;
   payment: {

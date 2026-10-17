@@ -101,6 +101,7 @@ export default function CheckoutSuccessPage() {
               items={order.items}
               subtotal={order.subtotal}
               discount={order.discount}
+              deliveryFee={order.deliveryFee}
               total={order.total}
             />
           </div>

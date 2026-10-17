@@ -32,6 +32,8 @@ import { hasAccount } from "@/lib/account";
 import { cn } from "@/lib/utils";
 import { integralCF } from "@/styles/fonts";
 
+const DELIVERY_FEE = 15;
+
 export default function CheckoutPage() {
   // useSearchParams needs a Suspense boundary to build statically
   return (
@@ -73,7 +75,8 @@ function Checkout() {
 
   const subtotal = totalPrice;
   const discount = Math.round(totalPrice - adjustedTotalPrice);
-  const total = Math.round(adjustedTotalPrice);
+  const deliveryFee = step === "payment" ? DELIVERY_FEE : undefined;
+  const total = Math.round(adjustedTotalPrice) + (deliveryFee ?? 0);
 
   const handleShippingSubmit = (values: ShippingInfo) => {
     dispatch(saveShipping(values));
@@ -92,6 +95,7 @@ function Checkout() {
       items: cart.items,
       subtotal,
       discount,
+      deliveryFee: DELIVERY_FEE,
       total,
       shipping,
       payment: {
@@ -189,6 +193,7 @@ function Checkout() {
               items={cart.items}
               subtotal={subtotal}
               discount={discount}
+              deliveryFee={deliveryFee}
               total={total}
             />
           </div>
