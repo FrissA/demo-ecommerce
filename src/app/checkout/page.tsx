@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { TbBasketExclamation } from "react-icons/tb";
 import BreadcrumbCheckout from "@/components/checkout-page/BreadcrumbCheckout";
 import CheckoutSteps from "@/components/checkout-page/CheckoutSteps";
@@ -32,17 +32,35 @@ import { cn } from "@/lib/utils";
 import { integralCF } from "@/styles/fonts";
 
 export default function CheckoutPage() {
+  // useSearchParams needs a Suspense boundary to build statically
+  return (
+    <Suspense>
+      <Checkout />
+    </Suspense>
+  );
+}
+
+function Checkout() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const { cart, totalPrice, adjustedTotalPrice } = useAppSelector(
     (state: RootState) => state.carts
   );
   const shipping = useAppSelector((state: RootState) => state.checkout.shipping);
-  // Returning shoppers with saved shipping info start on the payment step
-  const [chosenStep, setStep] = useState<"information" | "payment" | null>(
-    null
-  );
-  const step = chosenStep ?? (shipping ? "payment" : "information");
+  // The step lives in the URL (/checkout vs /checkout?step=payment) so each
+  // step is a distinct page for analytics and swarm funnel tracking
+  const step =
+    searchParams.get("step") === "payment" && shipping
+      ? "payment"
+      : "information";
+  const setStep = (next: "information" | "payment") => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (next === "payment") params.set("step", "payment");
+    else params.delete("step");
+    const query = params.toString();
+    router.push(query ? `/checkout?${query}` : "/checkout");
+  };
   // Stays true after the payment resolves so the page does not flash the
   // empty cart state while navigating to the result page
   const [processing, setProcessing] = useState(false);

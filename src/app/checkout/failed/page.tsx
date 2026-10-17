@@ -74,7 +74,7 @@ export default function CheckoutFailedPage() {
               asChild
               className="text-sm md:text-base font-medium rounded-full w-full h-[54px]"
             >
-              <Link href="/checkout">Try Again</Link>
+              <Link href="/checkout?step=payment">Try Again</Link>
             </Button>
             <Button
               asChild
