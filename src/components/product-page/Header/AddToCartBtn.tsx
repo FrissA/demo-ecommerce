@@ -1,10 +1,11 @@
 "use client";
 
 import { addToCart } from "@/lib/features/carts/cartsSlice";
+import { setSizeError } from "@/lib/features/products/productsSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux";
 import { RootState } from "@/lib/store";
 import { Product } from "@/types/product.types";
-import React, { useState } from "react";
+import React from "react";
 import { track } from "@/lib/analytics";
 
 const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
@@ -12,15 +13,9 @@ const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
   const { sizeSelection, colorSelection } = useAppSelector(
     (state: RootState) => state.products,
   );
-  const [error, setError] = useState(false);
 
   return (
     <div className="relative w-full ml-3 sm:ml-5">
-      {error && !sizeSelection && (
-        <span className="absolute -top-6 left-0 text-sm text-red-600">
-          Please select a size
-        </span>
-      )}
       <button
         type="button"
         className="bg-black w-full rounded-full h-11 md:h-[52px] text-sm sm:text-base text-white hover:bg-black/80 transition-all"
@@ -30,7 +25,11 @@ const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
             has_size: !!sizeSelection,
           });
           if (!sizeSelection) {
-            setError(true);
+            // Point the shopper at the size picker, which shows the message
+            dispatch(setSizeError(true));
+            const picker = document.getElementById("size-selection");
+            picker?.scrollIntoView({ behavior: "smooth", block: "center" });
+            picker?.focus({ preventScroll: true });
             return;
           }
           dispatch(

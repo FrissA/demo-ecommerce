@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import BreadcrumbCheckout from "@/components/checkout-page/BreadcrumbCheckout";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -38,6 +40,13 @@ const EMPTY: Account = {
 
 type Errors = Partial<Record<keyof Account, string>>;
 
+// Rules shown next to each field so shoppers know them before submitting
+const HINTS: Partial<Record<keyof Account, string>> = {
+  username: "At least 4 letters, numbers or underscores.",
+  password: "At least 8 characters including a number.",
+  phone: "At least 7 digits.",
+};
+
 const validate = (v: Account): Errors => {
   const errors: Errors = {};
   if (!/^\S+@\S+\.\S+$/.test(v.email)) errors.email = "Enter a valid email.";
@@ -58,7 +67,16 @@ const validate = (v: Account): Errors => {
 export default function CreateAccountPage() {
   const router = useRouter();
   const [values, setValues] = useState<Account>(EMPTY);
-  const [errors, setErrors] = useState<Errors>({});
+  // Fields the shopper has left (or tried to submit); their errors update
+  // live while typing
+  const [touched, setTouched] = useState<Partial<Record<keyof Account, boolean>>>({});
+  const liveErrors = validate(values);
+  const errors: Errors = Object.fromEntries(
+    Object.entries(liveErrors).filter(([key]) => touched[key as keyof Account])
+  );
+
+  const markTouched = (key: keyof Account) =>
+    setTouched((prev) => ({ ...prev, [key]: true }));
 
   const field = (
     key: Exclude<keyof Account, "acceptTerms">,
@@ -72,10 +90,15 @@ export default function CreateAccountPage() {
         name={key}
         value={values[key]}
         onChange={(e) => setValues((prev) => ({ ...prev, [key]: e.target.value }))}
+        onBlur={() => markTouched(key)}
         aria-invalid={!!errors[key]}
+        aria-describedby={HINTS[key] ? `${key}-hint` : undefined}
         className="h-11"
         {...props}
       />
+      {HINTS[key] && !errors[key] && (
+        <FieldDescription id={`${key}-hint`}>{HINTS[key]}</FieldDescription>
+      )}
       <FieldError>{errors[key]}</FieldError>
     </Field>
   );
@@ -83,7 +106,9 @@ export default function CreateAccountPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const nextErrors = validate(values);
-    setErrors(nextErrors);
+    setTouched(
+      Object.fromEntries(Object.keys(EMPTY).map((key) => [key, true]))
+    );
     track("account_submitted", {
       success: Object.keys(nextErrors).length === 0,
       error_fields: Object.keys(nextErrors),
@@ -112,7 +137,11 @@ export default function CreateAccountPage() {
                 Register to continue
               </CardTitle>
               <CardDescription>
-                An account is required to place an order.
+                An account is optional. Create one, or{" "}
+                <Link href="/checkout" className="font-medium text-black underline underline-offset-4">
+                  continue as guest
+                </Link>
+                .
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -139,9 +168,10 @@ export default function CreateAccountPage() {
                       id="acceptTerms"
                       type="checkbox"
                       checked={values.acceptTerms}
-                      onChange={(e) =>
-                        setValues((prev) => ({ ...prev, acceptTerms: e.target.checked }))
-                      }
+                      onChange={(e) => {
+                        setValues((prev) => ({ ...prev, acceptTerms: e.target.checked }));
+                        markTouched("acceptTerms");
+                      }}
                     />
                     I accept the terms of service and privacy policy
                   </label>
@@ -149,12 +179,19 @@ export default function CreateAccountPage() {
                 </Field>
               </FieldGroup>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex-col gap-3">
               <Button
                 type="submit"
                 className="text-sm md:text-base font-medium rounded-full w-full h-[54px] md:h-[60px]"
               >
                 Create account
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="text-sm md:text-base font-medium rounded-full w-full h-[54px] md:h-[60px]"
+              >
+                <Link href="/checkout">Continue as guest</Link>
               </Button>
             </CardFooter>
           </form>

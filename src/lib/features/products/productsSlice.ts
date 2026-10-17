@@ -10,6 +10,8 @@ export type Color = {
 interface ProductsState {
   colorSelection: Color;
   sizeSelection: string;
+  // Set when Add to Cart is tapped without a size; cleared on size pick
+  sizeError: boolean;
 }
 
 // Define the initial state using that type
@@ -19,6 +21,7 @@ const initialState: ProductsState = {
     code: "bg-[#4F4631]",
   },
   sizeSelection: "",
+  sizeError: false,
 };
 
 export const productsSlice = createSlice({
@@ -31,10 +34,15 @@ export const productsSlice = createSlice({
     },
     setSizeSelection: (state, action: PayloadAction<string>) => {
       state.sizeSelection = action.payload;
+      state.sizeError = false;
+    },
+    setSizeError: (state, action: PayloadAction<boolean>) => {
+      state.sizeError = action.payload;
     },
   },
 });
 
-export const { setColorSelection, setSizeSelection } = productsSlice.actions;
+export const { setColorSelection, setSizeSelection, setSizeError } =
+  productsSlice.actions;
 
 export default productsSlice.reducer;

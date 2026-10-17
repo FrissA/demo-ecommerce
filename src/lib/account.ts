@@ -1,4 +1,4 @@
-// Shoppers must register before checking out. The account lives in
+// Shoppers can register before checking out or continue as guest. The account lives in
 // sessionStorage only; there is no backend.
 const KEY = "shopco-account";
 

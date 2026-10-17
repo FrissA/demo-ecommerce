@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TbBasketExclamation } from "react-icons/tb";
@@ -31,7 +31,6 @@ import {
   getCardBrand,
   simulatePayment,
 } from "@/lib/payment";
-import { hasAccount } from "@/lib/account";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { integralCF } from "@/styles/fonts";
@@ -71,11 +70,6 @@ function Checkout() {
   // Stays true after the payment resolves so the page does not flash the
   // empty cart state while navigating to the result page
   const [processing, setProcessing] = useState(false);
-
-  // Checkout requires an account
-  useEffect(() => {
-    if (!hasAccount()) router.replace("/checkout/account");
-  }, [router]);
 
   const [promo, setPromo] = useState<string | null>(null);
   // Bumped when a promo code is applied; remounts the shipping form
