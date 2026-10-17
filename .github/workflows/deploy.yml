@@ -1,0 +1,65 @@
+name: Build & Deploy
+
+# Pull requests get a Netlify preview URL; pushes to main go to production.
+# Requires repo secrets NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID. Without them
+# the workflow still builds (as a CI check) but skips deploying.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build
+        if: env.NETLIFY_AUTH_TOKEN == ''
+        run: npm run build
+
+      - name: Deploy preview
+        if: env.NETLIFY_AUTH_TOKEN != '' && github.event_name == 'pull_request'
+        id: preview
+        run: |
+          npx -y netlify-cli deploy --build \
+            --alias "pr-${{ github.event.pull_request.number }}" \
+            --message "PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}" \
+            --json > deploy.json
+          echo "url=$(jq -r .deploy_url deploy.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Comment preview URL
+        if: steps.preview.outputs.url
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --repo "${{ github.repository }}" \
+            --edit-last --create-if-none \
+            --body "Preview deployed: ${{ steps.preview.outputs.url }} (commit ${{ github.event.pull_request.head.sha }})"
+
+      - name: Deploy production
+        if: env.NETLIFY_AUTH_TOKEN != '' && github.event_name != 'pull_request'
+        run: |
+          npx -y netlify-cli deploy --build --prod \
+            --message "${{ github.sha }}"
