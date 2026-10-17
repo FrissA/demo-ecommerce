@@ -65,12 +65,6 @@ export default function CartPage() {
                       -${Math.round(totalPrice - adjustedTotalPrice)}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="md:text-xl text-black/60">
-                      Delivery Fee
-                    </span>
-                    <span className="md:text-xl font-bold">Free</span>
-                  </div>
                   <hr className="border-t-black/10" />
                   <div className="flex items-center justify-between">
                     <span className="md:text-xl text-black">Total</span>
@@ -102,7 +96,7 @@ export default function CartPage() {
                   asChild
                   className="text-sm md:text-base font-medium bg-black rounded-full w-full py-4 h-[54px] md:h-[60px] group"
                 >
-                  <Link href="/checkout">
+                  <Link href="/checkout/account">
                     Go to Checkout{" "}
                     <FaArrowRight className="text-xl ml-2 group-hover:translate-x-1 transition-all" />
                   </Link>

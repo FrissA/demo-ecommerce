@@ -18,7 +18,7 @@ const initialState: ProductsState = {
     name: "Brown",
     code: "bg-[#4F4631]",
   },
-  sizeSelection: "Large",
+  sizeSelection: "",
 };
 
 export const productsSlice = createSlice({

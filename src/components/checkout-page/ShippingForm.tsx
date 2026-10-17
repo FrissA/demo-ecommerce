@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { FaArrowRight } from "react-icons/fa6";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -154,14 +152,13 @@ const ShippingForm = ({ defaultValues, onSubmit }: ShippingFormProps) => {
             </Field>
           </FieldGroup>
         </CardContent>
-        <CardFooter>
-          <Button
+        <CardFooter className="justify-end">
+          <button
             type="submit"
-            className="text-sm md:text-base font-medium rounded-full w-full h-[54px] md:h-[60px] group"
+            className="text-[11px] text-[#c4c4c4] underline-offset-2 hover:underline"
           >
-            Continue to Payment
-            <FaArrowRight className="text-xl ml-2 group-hover:translate-x-1 transition-all" />
-          </Button>
+            Continue to payment
+          </button>
         </CardFooter>
       </form>
     </Card>

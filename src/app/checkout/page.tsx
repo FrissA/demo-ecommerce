@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TbBasketExclamation } from "react-icons/tb";
@@ -10,6 +10,9 @@ import OrderSummary from "@/components/checkout-page/OrderSummary";
 import PaymentForm, {
   PaymentDetails,
 } from "@/components/checkout-page/PaymentForm";
+import PromoCodeForm, {
+  PROMO_CODES,
+} from "@/components/checkout-page/PromoCodeForm";
 import ShippingForm from "@/components/checkout-page/ShippingForm";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,8 +31,11 @@ import {
   getCardBrand,
   simulatePayment,
 } from "@/lib/payment";
+import { hasAccount } from "@/lib/account";
 import { cn } from "@/lib/utils";
 import { integralCF } from "@/styles/fonts";
+
+const DELIVERY_FEE = 15;
 
 export default function CheckoutPage() {
   // useSearchParams needs a Suspense boundary to build statically
@@ -65,9 +71,23 @@ function Checkout() {
   // empty cart state while navigating to the result page
   const [processing, setProcessing] = useState(false);
 
+  // Checkout requires an account
+  useEffect(() => {
+    if (!hasAccount()) router.replace("/checkout/account");
+  }, [router]);
+
+  const [promo, setPromo] = useState<string | null>(null);
+  // Bumped when a promo code is applied; remounts the shipping form
+  const [shippingFormKey, setShippingFormKey] = useState(0);
+
+  const promoDiscount = promo
+    ? Math.round(adjustedTotalPrice * PROMO_CODES[promo])
+    : 0;
   const subtotal = totalPrice;
-  const discount = Math.round(totalPrice - adjustedTotalPrice);
-  const total = Math.round(adjustedTotalPrice);
+  const discount = Math.round(totalPrice - adjustedTotalPrice) + promoDiscount;
+  const deliveryFee = step === "payment" ? DELIVERY_FEE : undefined;
+  const total =
+    Math.round(adjustedTotalPrice) - promoDiscount + (deliveryFee ?? 0);
 
   const handleShippingSubmit = (values: ShippingInfo) => {
     dispatch(saveShipping(values));
@@ -86,6 +106,7 @@ function Checkout() {
       items: cart.items,
       subtotal,
       discount,
+      deliveryFee: DELIVERY_FEE,
       total,
       shipping,
       payment: {
@@ -142,6 +163,7 @@ function Checkout() {
           <div className="w-full flex flex-col gap-5">
             {step === "information" || !shipping ? (
               <ShippingForm
+                key={shippingFormKey}
                 defaultValues={shipping}
                 onSubmit={handleShippingSubmit}
               />
@@ -183,7 +205,19 @@ function Checkout() {
               items={cart.items}
               subtotal={subtotal}
               discount={discount}
+              deliveryFee={deliveryFee}
               total={total}
+              footer={
+                step === "information" && (
+                  <PromoCodeForm
+                    applied={promo}
+                    onApply={(code) => {
+                      setPromo(code);
+                      setShippingFormKey((key) => key + 1);
+                    }}
+                  />
+                )
+              }
             />
           </div>
         </div>

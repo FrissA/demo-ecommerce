@@ -15,6 +15,8 @@ type OrderSummaryProps = {
   items: CartItem[];
   subtotal: number;
   discount: number;
+  /** Only shown once known, on the payment step */
+  deliveryFee?: number;
   total: number;
   footer?: React.ReactNode;
 };
@@ -23,6 +25,7 @@ const OrderSummary = ({
   items,
   subtotal,
   discount,
+  deliveryFee,
   total,
   footer,
 }: OrderSummaryProps) => {
@@ -75,10 +78,12 @@ const OrderSummary = ({
             <span className="font-bold text-destructive">-${discount}</span>
           </div>
         )}
-        <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">Delivery Fee</span>
-          <span className="font-bold">Free</span>
-        </div>
+        {deliveryFee !== undefined && (
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">Delivery Fee</span>
+            <span className="font-bold">${deliveryFee}</span>
+          </div>
+        )}
         <Separator />
         <div className="flex items-center justify-between">
           <span>Total</span>
