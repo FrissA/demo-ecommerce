@@ -15,7 +15,6 @@ type OrderSummaryProps = {
   items: CartItem[];
   subtotal: number;
   discount: number;
-  /** Only shown once known, on the payment step */
   deliveryFee?: number;
   total: number;
   footer?: React.ReactNode;

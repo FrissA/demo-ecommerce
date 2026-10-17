@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { clearCart } from "@/lib/features/carts/cartsSlice";
 import {
+  DELIVERY_FEE,
   Order,
   saveShipping,
   setLastOrder,
@@ -35,8 +36,6 @@ import { hasAccount } from "@/lib/account";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { integralCF } from "@/styles/fonts";
-
-const DELIVERY_FEE = 15;
 
 export default function CheckoutPage() {
   // useSearchParams needs a Suspense boundary to build statically
@@ -86,9 +85,8 @@ function Checkout() {
     : 0;
   const subtotal = totalPrice;
   const discount = Math.round(totalPrice - adjustedTotalPrice) + promoDiscount;
-  const deliveryFee = step === "payment" ? DELIVERY_FEE : undefined;
-  const total =
-    Math.round(adjustedTotalPrice) - promoDiscount + (deliveryFee ?? 0);
+  const deliveryFee = DELIVERY_FEE;
+  const total = Math.round(adjustedTotalPrice) - promoDiscount + deliveryFee;
 
   const handleShippingSubmit = (values: ShippingInfo) => {
     dispatch(saveShipping(values));

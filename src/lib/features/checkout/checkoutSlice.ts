@@ -3,6 +3,9 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { CartItem } from "@/lib/features/carts/cartsSlice";
 import { CardBrand, PaymentFailureCode } from "@/lib/payment";
 
+// Flat delivery fee, shown from the cart onwards so the total never changes at payment
+export const DELIVERY_FEE = 15;
+
 export type ShippingInfo = {
   email: string;
   fullName: string;

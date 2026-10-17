@@ -14,6 +14,7 @@ import { RootState } from "@/lib/store";
 import { useAppSelector } from "@/lib/hooks/redux";
 import Link from "next/link";
 import { track } from "@/lib/analytics";
+import { DELIVERY_FEE } from "@/lib/features/checkout/checkoutSlice";
 
 export default function CartPage() {
   const { cart, totalPrice, adjustedTotalPrice } = useAppSelector(
@@ -66,11 +67,19 @@ export default function CartPage() {
                       -${Math.round(totalPrice - adjustedTotalPrice)}
                     </span>
                   </div>
+                  <div className="flex items-center justify-between">
+                    <span className="md:text-xl text-black/60">
+                      Delivery Fee
+                    </span>
+                    <span className="md:text-xl font-bold">
+                      ${DELIVERY_FEE}
+                    </span>
+                  </div>
                   <hr className="border-t-black/10" />
                   <div className="flex items-center justify-between">
                     <span className="md:text-xl text-black">Total</span>
                     <span className="text-xl md:text-2xl font-bold">
-                      ${Math.round(adjustedTotalPrice)}
+                      ${Math.round(adjustedTotalPrice) + DELIVERY_FEE}
                     </span>
                   </div>
                 </div>
