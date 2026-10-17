@@ -33,6 +33,15 @@ Card details are never stored. The simulated processor lives in `src/lib/payment
 
 Use any future expiry (e.g. `12/30`) and any 3-digit CVC (4 digits for Amex).
 
+## Swarm test hooks
+
+Used by FrictionSwarm (jbecerra73/build101_grupo16) to test the store:
+
+- Every page renders `<meta name="build-sha" content="…">` with the deployed commit (`COMMIT_REF`, inlined at build time; `dev` locally).
+- The payment step lives at `/checkout?step=payment`, so shipping and payment are distinct funnel steps.
+- The confirmation page marks the echoed required fields with `data-echo="email" | "address" | "card"` (card is masked, e.g. `Visa •••• 4242`).
+- A `?swarm=<runId>` query parameter is accepted and ignored.
+
 ## Deployment (CI/CD)
 
 `.github/workflows/deploy.yml` deploys to Netlify from GitHub Actions:

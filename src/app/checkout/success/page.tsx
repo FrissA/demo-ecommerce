@@ -48,7 +48,8 @@ export default function CheckoutSuccessPage() {
               </CardTitle>
               <CardDescription className="text-base">
                 Thanks, {shipping.fullName.split(" ")[0]}! A confirmation was
-                sent to {shipping.email}.
+                sent to{" "}
+                <span data-echo="email">{shipping.email}</span>.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
@@ -66,8 +67,8 @@ export default function CheckoutSuccessPage() {
                 </div>
                 <div className="flex flex-col gap-1">
                   <dt className="text-muted-foreground">Paid with</dt>
-                  <dd className="font-medium">
-                    {CARD_BRAND_LABELS[payment.brand]} ending in {payment.last4}
+                  <dd className="font-medium" data-echo="card">
+                    {CARD_BRAND_LABELS[payment.brand]} •••• {payment.last4}
                   </dd>
                 </div>
                 <div className="flex flex-col gap-1">
@@ -78,7 +79,9 @@ export default function CheckoutSuccessPage() {
                 </div>
                 <div className="flex flex-col gap-1 sm:col-span-2">
                   <dt className="text-muted-foreground">Shipping to</dt>
-                  <dd className="font-medium">
+                  {/* data-echo marks the submitted required fields so the
+                      swarm can verify a completion was real */}
+                  <dd className="font-medium" data-echo="address">
                     {shipping.fullName}, {shipping.address}, {shipping.city}{" "}
                     {shipping.postalCode}, {shipping.country}
                   </dd>
