@@ -102,7 +102,7 @@ export default function CartPage() {
                   asChild
                   className="text-sm md:text-base font-medium bg-black rounded-full w-full py-4 h-[54px] md:h-[60px] group"
                 >
-                  <Link href="/checkout">
+                  <Link href="/checkout/account">
                     Go to Checkout{" "}
                     <FaArrowRight className="text-xl ml-2 group-hover:translate-x-1 transition-all" />
                   </Link>
