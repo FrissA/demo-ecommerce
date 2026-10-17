@@ -10,6 +10,9 @@ import OrderSummary from "@/components/checkout-page/OrderSummary";
 import PaymentForm, {
   PaymentDetails,
 } from "@/components/checkout-page/PaymentForm";
+import PromoCodeForm, {
+  PROMO_CODES,
+} from "@/components/checkout-page/PromoCodeForm";
 import ShippingForm from "@/components/checkout-page/ShippingForm";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -73,10 +76,18 @@ function Checkout() {
     if (!hasAccount()) router.replace("/checkout/account");
   }, [router]);
 
+  const [promo, setPromo] = useState<string | null>(null);
+  // Bumped when a promo code is applied; remounts the shipping form
+  const [shippingFormKey, setShippingFormKey] = useState(0);
+
+  const promoDiscount = promo
+    ? Math.round(adjustedTotalPrice * PROMO_CODES[promo])
+    : 0;
   const subtotal = totalPrice;
-  const discount = Math.round(totalPrice - adjustedTotalPrice);
+  const discount = Math.round(totalPrice - adjustedTotalPrice) + promoDiscount;
   const deliveryFee = step === "payment" ? DELIVERY_FEE : undefined;
-  const total = Math.round(adjustedTotalPrice) + (deliveryFee ?? 0);
+  const total =
+    Math.round(adjustedTotalPrice) - promoDiscount + (deliveryFee ?? 0);
 
   const handleShippingSubmit = (values: ShippingInfo) => {
     dispatch(saveShipping(values));
@@ -152,6 +163,7 @@ function Checkout() {
           <div className="w-full flex flex-col gap-5">
             {step === "information" || !shipping ? (
               <ShippingForm
+                key={shippingFormKey}
                 defaultValues={shipping}
                 onSubmit={handleShippingSubmit}
               />
@@ -195,6 +207,17 @@ function Checkout() {
               discount={discount}
               deliveryFee={deliveryFee}
               total={total}
+              footer={
+                step === "information" && (
+                  <PromoCodeForm
+                    applied={promo}
+                    onApply={(code) => {
+                      setPromo(code);
+                      setShippingFormKey((key) => key + 1);
+                    }}
+                  />
+                )
+              }
             />
           </div>
         </div>
