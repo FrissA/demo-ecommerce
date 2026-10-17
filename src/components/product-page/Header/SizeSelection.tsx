@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux";
 import { RootState } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import React from "react";
+import { FaChevronDown } from "react-icons/fa6";
 
 const SizeSelection = () => {
   const { sizeSelection } = useAppSelector(
@@ -17,20 +18,29 @@ const SizeSelection = () => {
       <span className="text-sm sm:text-base text-black/60 mb-4">
         Choose Size
       </span>
-      <div className="flex items-center flex-wrap lg:space-x-3">
-        {["Small", "Medium", "Large", "X-Large"].map((size, index) => (
-          <button
-            key={index}
-            type="button"
-            className={cn([
-              "bg-[#F0F0F0] flex items-center justify-center px-5 lg:px-6 py-2.5 lg:py-3 text-sm lg:text-base rounded-full m-1 lg:m-0 max-h-[46px]",
-              sizeSelection === size && "bg-black font-medium text-white",
-            ])}
-            onClick={() => dispatch(setSizeSelection(size))}
-          >
-            {size}
-          </button>
-        ))}
+      {/* Sizes open on hover */}
+      <div className="group relative w-fit">
+        <div className="flex items-center gap-3 bg-[#F0F0F0] px-5 py-2.5 rounded-full text-sm lg:text-base cursor-default">
+          {sizeSelection || "Size"}
+          <FaChevronDown className="text-xs" />
+        </div>
+        <div className="absolute left-0 top-full z-20 hidden pt-2 group-hover:flex">
+          <div className="flex gap-2 rounded-2xl bg-white p-2 shadow-lg border border-black/10">
+            {["Small", "Medium", "Large", "X-Large"].map((size) => (
+              <button
+                key={size}
+                type="button"
+                className={cn([
+                  "bg-[#F0F0F0] px-4 py-2 text-sm rounded-full whitespace-nowrap",
+                  sizeSelection === size && "bg-black font-medium text-white",
+                ])}
+                onClick={() => dispatch(setSizeSelection(size))}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
