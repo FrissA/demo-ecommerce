@@ -83,7 +83,7 @@ const Header = ({ data }: { data: Product }) => {
           <hr className="h-[1px] border-t-black/10 mb-5" />
           <ColorSelection />
           <hr className="h-[1px] border-t-black/10 my-5" />
-          <SizeSelection />
+          <SizeSelection productId={data.id} />
           <hr className="hidden md:block h-[1px] border-t-black/10 my-5" />
           <AddToCardSection data={data} />
         </div>

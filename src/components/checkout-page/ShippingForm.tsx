@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ShippingInfo } from "@/lib/features/checkout/checkoutSlice";
+import { track } from "@/lib/analytics";
 
 const COUNTRIES = [
   "United States",
@@ -63,9 +64,14 @@ const validate = (values: ShippingInfo): Errors => {
 type ShippingFormProps = {
   defaultValues: ShippingInfo | null;
   onSubmit: (values: ShippingInfo) => void;
+  promoApplied?: boolean;
 };
 
-const ShippingForm = ({ defaultValues, onSubmit }: ShippingFormProps) => {
+const ShippingForm = ({
+  defaultValues,
+  onSubmit,
+  promoApplied = false,
+}: ShippingFormProps) => {
   const [values, setValues] = useState<ShippingInfo>(
     defaultValues ?? EMPTY_SHIPPING
   );
@@ -79,6 +85,11 @@ const ShippingForm = ({ defaultValues, onSubmit }: ShippingFormProps) => {
     e.preventDefault();
     const nextErrors = validate(values);
     setErrors(nextErrors);
+    track("shipping_submitted", {
+      success: Object.keys(nextErrors).length === 0,
+      error_fields: Object.keys(nextErrors),
+      promo_applied: promoApplied,
+    });
     if (Object.keys(nextErrors).length === 0) onSubmit(values);
   };
 

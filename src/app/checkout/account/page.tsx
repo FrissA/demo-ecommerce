@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Account, saveAccount } from "@/lib/account";
+import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { integralCF } from "@/styles/fonts";
 
@@ -83,6 +84,10 @@ export default function CreateAccountPage() {
     e.preventDefault();
     const nextErrors = validate(values);
     setErrors(nextErrors);
+    track("account_submitted", {
+      success: Object.keys(nextErrors).length === 0,
+      error_fields: Object.keys(nextErrors),
+    });
     if (Object.keys(nextErrors).length > 0) return;
     saveAccount(values);
     router.push("/checkout");

@@ -32,6 +32,7 @@ import {
   simulatePayment,
 } from "@/lib/payment";
 import { hasAccount } from "@/lib/account";
+import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { integralCF } from "@/styles/fonts";
 
@@ -120,7 +121,19 @@ function Checkout() {
     };
 
     dispatch(setLastOrder(order));
+    track("payment_submitted", {
+      success: result.ok,
+      failure_code: result.ok ? undefined : result.code,
+      delivery_fee: DELIVERY_FEE,
+      total,
+    });
     if (result.ok) {
+      track("order_completed", {
+        order_id: order.id,
+        total,
+        delivery_fee: DELIVERY_FEE,
+        items: cart.totalQuantities,
+      });
       dispatch(clearCart());
       router.push("/checkout/success");
     } else {
@@ -166,6 +179,7 @@ function Checkout() {
                 key={shippingFormKey}
                 defaultValues={shipping}
                 onSubmit={handleShippingSubmit}
+                promoApplied={!!promo}
               />
             ) : (
               <>

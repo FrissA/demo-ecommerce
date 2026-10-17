@@ -40,7 +40,20 @@ Used by FrictionSwarm (jbecerra73/build101_grupo16) to test the store:
 - Every page renders `<meta name="build-sha" content="…">` with the deployed commit (`COMMIT_REF`, inlined at build time; `dev` locally).
 - The payment step lives at `/checkout?step=payment`, so shipping and payment are distinct funnel steps.
 - The confirmation page marks the echoed required fields with `data-echo="email" | "address" | "card"` (card is masked, e.g. `Visa •••• 4242`).
-- A `?swarm=<runId>` query parameter is accepted and ignored.
+- A `?swarm=<runId>&agent=<agentId>&persona=<personaId>` query tags the session as a swarm agent (see Analytics).
+
+## Analytics
+
+PostHog (`posthog-js`, `src/lib/analytics.ts`) with pageviews, page leaves, autocapture and rage clicks, plus these business events: `product_viewed`, `size_selected`, `add_to_cart_clicked`, `product_added`, `checkout_clicked`, `account_submitted`, `shipping_submitted`, `promo_applied`, `payment_submitted`, `order_completed`. The tracking plan lives in FrictionSwarm's `shared/analytics.ts`. No personal data (email, name, address, card) is sent as a property.
+
+Every event carries `build_sha`, `font_scale` (root font size / 16) and `prefers_contrast`. Swarm sessions also carry `swarm_run`, `swarm_agent` and `swarm_persona`, kept for the browser session, and are identified as `swarm:<agentId>`. `window.posthog` is exposed so agents can capture `swarm_think_aloud` / `swarm_give_up` / `swarm_done`.
+
+| Env var | Default |
+|---|---|
+| `NEXT_PUBLIC_POSTHOG_KEY` | unset: tracking is off |
+| `NEXT_PUBLIC_POSTHOG_HOST` | `https://us.i.posthog.com` |
+
+For Netlify builds from CI, set them as repository **variables** and pass them in the deploy workflow's `env`.
 
 ## Deployment (CI/CD)
 

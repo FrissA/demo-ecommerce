@@ -6,8 +6,9 @@ import { RootState } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { FaChevronDown } from "react-icons/fa6";
+import { track } from "@/lib/analytics";
 
-const SizeSelection = () => {
+const SizeSelection = ({ productId }: { productId: number }) => {
   const { sizeSelection } = useAppSelector(
     (state: RootState) => state.products
   );
@@ -34,7 +35,10 @@ const SizeSelection = () => {
                   "bg-[#F0F0F0] px-4 py-2 text-sm rounded-full whitespace-nowrap",
                   sizeSelection === size && "bg-black font-medium text-white",
                 ])}
-                onClick={() => dispatch(setSizeSelection(size))}
+                onClick={() => {
+                  dispatch(setSizeSelection(size));
+                  track("size_selected", { product_id: productId, size });
+                }}
               >
                 {size}
               </button>

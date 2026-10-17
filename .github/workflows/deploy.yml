@@ -26,6 +26,9 @@ jobs:
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
       # Rendered as the build-sha meta tag; the PR head, not the merge commit
       COMMIT_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+      # Inlined into the client bundle; without a key analytics is a no-op
+      NEXT_PUBLIC_POSTHOG_KEY: ${{ vars.NEXT_PUBLIC_POSTHOG_KEY }}
+      NEXT_PUBLIC_POSTHOG_HOST: ${{ vars.NEXT_PUBLIC_POSTHOG_HOST }}
     steps:
       - uses: actions/checkout@v4
 

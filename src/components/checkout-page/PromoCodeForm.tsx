@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { MdOutlineLocalOffer } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { track } from "@/lib/analytics";
 
 export const PROMO_CODES: Record<string, number> = { WELCOME10: 0.1 };
 
@@ -19,10 +20,12 @@ const PromoCodeForm = ({ applied, onApply }: PromoCodeFormProps) => {
   const handleApply = () => {
     const normalized = code.trim().toUpperCase();
     if (!(normalized in PROMO_CODES)) {
+      track("promo_applied", { code: normalized, success: false });
       setError("This code is not valid.");
       return;
     }
     setError(null);
+    track("promo_applied", { code: normalized, success: true });
     onApply(normalized);
   };
 

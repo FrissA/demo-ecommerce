@@ -6,6 +6,7 @@ import TopNavbar from "@/components/layout/Navbar/TopNavbar";
 import Footer from "@/components/layout/Footer";
 import HolyLoader from "holy-loader";
 import Providers from "./providers";
+import Analytics from "@/components/Analytics";
 
 export const metadata: Metadata = {
   title: "Shopco",
@@ -27,6 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={satoshi.className}>
         <HolyLoader color="#868686" />
+        <Analytics />
         <TopBanner />
         <Providers>
           <TopNavbar />
