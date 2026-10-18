@@ -78,8 +78,6 @@ function Checkout() {
   }, [router]);
 
   const [promo, setPromo] = useState<string | null>(null);
-  // Bumped when a promo code is applied; remounts the shipping form
-  const [shippingFormKey, setShippingFormKey] = useState(0);
 
   const promoDiscount = promo
     ? Math.round(adjustedTotalPrice * PROMO_CODES[promo])
@@ -176,7 +174,6 @@ function Checkout() {
           <div className="w-full flex flex-col gap-5">
             {step === "information" || !shipping ? (
               <ShippingForm
-                key={shippingFormKey}
                 defaultValues={shipping}
                 onSubmit={handleShippingSubmit}
                 promoApplied={!!promo}
@@ -225,10 +222,7 @@ function Checkout() {
                 step === "information" && (
                   <PromoCodeForm
                     applied={promo}
-                    onApply={(code) => {
-                      setPromo(code);
-                      setShippingFormKey((key) => key + 1);
-                    }}
+                    onApply={setPromo}
                   />
                 )
               }
