@@ -17,7 +17,7 @@ const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
   const [added, setAdded] = useState<string | null>(null);
 
   return (
-    <div className="flex flex-col w-full ml-3 sm:ml-5">
+    <div className="flex flex-col flex-1 min-w-[200px]">
       {error && !sizeSelection && (
         <span
           role="alert"
@@ -42,7 +42,7 @@ const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
       )}
       <button
         type="button"
-        className="bg-black w-full rounded-full min-h-11 md:min-h-[52px] text-sm sm:text-base text-white hover:bg-black/80 transition-all"
+        className="bg-black w-full rounded-full min-h-[52px] px-4 py-3 text-base font-medium text-white hover:bg-black/80 transition-all"
         onClick={() => {
           track("add_to_cart_clicked", {
             product_id: data.id,

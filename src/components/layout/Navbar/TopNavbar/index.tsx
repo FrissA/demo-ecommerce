@@ -131,16 +131,17 @@ const TopNavbar = () => {
           <Link
             href="/shop#shop-search"
             aria-label="Search"
-            className="block md:hidden mr-[14px] p-1"
+            className="flex md:hidden items-center gap-1.5 mr-2 min-h-11 min-w-11 px-2.5 rounded-full border border-black font-bold text-sm"
           >
             <Image
               priority
               src="/icons/search-black.svg"
               height={100}
               width={100}
-              alt="search"
+              alt=""
               className="max-w-[22px] max-h-[22px]"
             />
+            <span className="hidden min-[400px]:inline">Search</span>
           </Link>
           <CartBtn />
           <Link href="/#signin" className="p-1">

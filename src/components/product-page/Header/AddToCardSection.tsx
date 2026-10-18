@@ -18,7 +18,9 @@ const AddToCardSection = ({ data }: { data: Product }) => {
   }, [data.id, data.title, data.price]);
 
   return (
-    <div className="fixed md:relative w-full bg-white border-t md:border-none border-black/5 bottom-0 left-0 p-4 md:p-0 z-10 flex items-center justify-between sm:justify-start md:justify-center">
+    // In the page flow (not a fixed bottom bar) so nothing overlaps the size
+    // buttons or the button itself on mobile and at large text sizes
+    <div className="relative mt-5 md:mt-0 w-full flex flex-wrap items-end gap-3 sm:gap-5">
       <CartCounter onAdd={setQuantity} onRemove={setQuantity} />
       <AddToCartBtn data={{ ...data, quantity }} />
     </div>

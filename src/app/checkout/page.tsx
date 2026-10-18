@@ -31,7 +31,7 @@ import {
   getCardBrand,
   simulatePayment,
 } from "@/lib/payment";
-import { hasAccount } from "@/lib/account";
+import { continueAsGuest, hasAccount } from "@/lib/account";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { integralCF } from "@/styles/fonts";
@@ -72,10 +72,10 @@ function Checkout() {
   // empty cart state while navigating to the result page
   const [processing, setProcessing] = useState(false);
 
-  // Checkout requires an account
+  // Guest checkout is the default; creating an account stays optional
   useEffect(() => {
-    if (!hasAccount()) router.replace("/checkout/account");
-  }, [router]);
+    if (!hasAccount()) continueAsGuest();
+  }, []);
 
   const [promo, setPromo] = useState<string | null>(null);
 
