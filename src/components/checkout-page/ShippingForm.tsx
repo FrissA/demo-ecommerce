@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -163,13 +164,13 @@ const ShippingForm = ({
             </Field>
           </FieldGroup>
         </CardContent>
-        <CardFooter className="justify-end">
-          <button
+        <CardFooter>
+          <Button
             type="submit"
-            className="text-[11px] text-[#c4c4c4] underline-offset-2 hover:underline"
+            className="text-sm md:text-base font-medium rounded-full w-full min-h-11 h-[54px] md:h-[60px] focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
           >
             Continue to payment
-          </button>
+          </Button>
         </CardFooter>
       </form>
     </Card>

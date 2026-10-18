@@ -98,7 +98,7 @@ export default function CartPage() {
                   className="text-sm md:text-base font-medium bg-black rounded-full w-full py-4 h-[54px] md:h-[60px] group"
                 >
                   <Link
-                    href="/checkout/account"
+                    href="/checkout"
                     onClick={() =>
                       track("checkout_clicked", {
                         cart_value: Math.round(adjustedTotalPrice),
