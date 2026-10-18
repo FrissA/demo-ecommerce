@@ -7,32 +7,16 @@ import {
 } from "@/components/ui/accordion";
 import Link from "next/link";
 import { MdKeyboardArrowRight } from "react-icons/md";
+import { STYLES } from "@/lib/catalog";
+import { cn } from "@/lib/utils";
 
-type DressStyle = {
-  title: string;
-  slug: string;
-};
-
-const dressStylesData: DressStyle[] = [
-  {
-    title: "Casual",
-    slug: "/shop?style=casual",
-  },
-  {
-    title: "Formal",
-    slug: "/shop?style=formal",
-  },
-  {
-    title: "Party",
-    slug: "/shop?style=party",
-  },
-  {
-    title: "Gym",
-    slug: "/shop?style=gym",
-  },
-];
-
-const DressStyleSection = () => {
+const DressStyleSection = ({
+  selected,
+  linkWith,
+}: {
+  selected?: string;
+  linkWith: (key: string, value: string) => string;
+}) => {
   return (
     <Accordion type="single" collapsible defaultValue="filter-style">
       <AccordionItem value="filter-style" className="border-none">
@@ -41,11 +25,15 @@ const DressStyleSection = () => {
         </AccordionTrigger>
         <AccordionContent className="pt-4 pb-0">
           <div className="flex flex-col text-black/60 space-y-0.5">
-            {dressStylesData.map((dStyle, idx) => (
+            {STYLES.map((dStyle) => (
               <Link
-                key={idx}
-                href={dStyle.slug}
-                className="flex items-center justify-between py-2"
+                key={dStyle.slug}
+                href={linkWith("style", dStyle.slug)}
+                aria-current={selected === dStyle.slug ? "page" : undefined}
+                className={cn([
+                  "flex items-center justify-between py-2",
+                  selected === dStyle.slug && "font-bold text-black",
+                ])}
               >
                 {dStyle.title} <MdKeyboardArrowRight />
               </Link>
