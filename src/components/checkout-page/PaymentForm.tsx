@@ -55,6 +55,13 @@ const validate = (values: PaymentDetails): Errors => {
   return errors;
 };
 
+const PAYMENT_LABELS: Record<keyof PaymentDetails, string> = {
+  cardNumber: "Card number",
+  nameOnCard: "Name on card",
+  expiry: "Expiry",
+  cvc: "CVC",
+};
+
 type PaymentFormProps = {
   total: number;
   processing: boolean;
@@ -77,15 +84,27 @@ const PaymentForm = ({
   const [errors, setErrors] = useState<Errors>({});
   const brand = getCardBrand(values.cardNumber);
 
-  const set = (key: keyof PaymentDetails, value: string) =>
+  const set = (key: keyof PaymentDetails, value: string) => {
     setValues((prev) => ({ ...prev, [key]: value }));
+    // Clear a field's message as soon as the shopper edits it
+    setErrors((prev) => {
+      if (!prev[key]) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const nextErrors = validate(values);
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length === 0) onSubmit(values);
+    const firstInvalid = Object.keys(nextErrors)[0];
+    if (!firstInvalid) onSubmit(values);
+    else document.getElementById(firstInvalid)?.focus();
   };
+
+  const errorKeys = Object.keys(errors) as (keyof PaymentDetails)[];
 
   return (
     <Card className="w-full rounded-[20px] border-black/10 shadow-none">
@@ -117,9 +136,9 @@ const PaymentForm = ({
                     set("cardNumber", formatCardNumber(e.target.value))
                   }
                   aria-invalid={!!errors.cardNumber}
-                  className="h-11 tabular-nums"
+                  className="h-12 text-base tabular-nums disabled:opacity-100"
                 />
-                <FieldError>{errors.cardNumber}</FieldError>
+                <FieldError className="text-base font-semibold text-red-700">{errors.cardNumber}</FieldError>
               </Field>
               <Field data-invalid={!!errors.nameOnCard}>
                 <FieldLabel htmlFor="nameOnCard">Name on card</FieldLabel>
@@ -129,9 +148,9 @@ const PaymentForm = ({
                   value={values.nameOnCard}
                   onChange={(e) => set("nameOnCard", e.target.value)}
                   aria-invalid={!!errors.nameOnCard}
-                  className="h-11"
+                  className="h-12 text-base disabled:opacity-100"
                 />
-                <FieldError>{errors.nameOnCard}</FieldError>
+                <FieldError className="text-base font-semibold text-red-700">{errors.nameOnCard}</FieldError>
               </Field>
               <div className="grid grid-cols-2 gap-5">
                 <Field data-invalid={!!errors.expiry}>
@@ -144,9 +163,9 @@ const PaymentForm = ({
                     value={values.expiry}
                     onChange={(e) => set("expiry", formatExpiry(e.target.value))}
                     aria-invalid={!!errors.expiry}
-                    className="h-11 tabular-nums"
+                    className="h-12 text-base tabular-nums disabled:opacity-100"
                   />
-                  <FieldError>{errors.expiry}</FieldError>
+                  <FieldError className="text-base font-semibold text-red-700">{errors.expiry}</FieldError>
                 </Field>
                 <Field data-invalid={!!errors.cvc}>
                   <FieldLabel htmlFor="cvc">CVC</FieldLabel>
@@ -159,9 +178,9 @@ const PaymentForm = ({
                     value={values.cvc}
                     onChange={(e) => set("cvc", digitsOnly(e.target.value))}
                     aria-invalid={!!errors.cvc}
-                    className="h-11 tabular-nums"
+                    className="h-12 text-base tabular-nums disabled:opacity-100"
                   />
-                  <FieldError>{errors.cvc}</FieldError>
+                  <FieldError className="text-base font-semibold text-red-700">{errors.cvc}</FieldError>
                 </Field>
               </div>
               <FieldDescription>
@@ -170,7 +189,38 @@ const PaymentForm = ({
             </FieldGroup>
           </FieldSet>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="sticky bottom-0 z-10 flex-col items-stretch gap-3 rounded-b-[20px] bg-white pt-4 md:static md:pt-0">
+          {errorKeys.length > 0 && (
+            <div
+              role="alert"
+              className="rounded-lg border-2 border-red-700 bg-red-50 p-4 text-base text-red-800"
+            >
+              <p className="font-bold">
+                Payment not sent yet. Please fix:
+              </p>
+              <ul className="mt-1 list-disc pl-5">
+                {errorKeys.map((key) => (
+                  <li key={key}>
+                    <a
+                      href={`#${key}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        document.getElementById(key)?.focus();
+                      }}
+                      className="font-semibold underline underline-offset-2"
+                    >
+                      {PAYMENT_LABELS[key]}: {errors[key]}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {processing && (
+            <p role="status" className="text-base font-semibold text-black">
+              Processing your payment, please wait…
+            </p>
+          )}
           <Button
             type="submit"
             disabled={processing}
