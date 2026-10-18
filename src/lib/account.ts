@@ -4,14 +4,7 @@ const KEY = "shopco-account";
 
 export type Account = {
   email: string;
-  username: string;
   password: string;
-  confirmPassword: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  birthDate: string;
-  acceptTerms: boolean;
 };
 
 export const hasAccount = () => {
@@ -23,7 +16,7 @@ export const hasAccount = () => {
 };
 
 export const saveAccount = (account: Account) => {
-  const { password, confirmPassword, ...profile } = account;
+  const { password, ...profile } = account;
   try {
     sessionStorage.setItem(KEY, JSON.stringify(profile));
   } catch {}
