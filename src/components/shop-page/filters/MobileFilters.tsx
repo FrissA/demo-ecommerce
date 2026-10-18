@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import {
   Drawer,
   DrawerClose,
@@ -13,12 +15,15 @@ import { FiSliders } from "react-icons/fi";
 import Filters from ".";
 
 const MobileFilters = () => {
+  const [open, setOpen] = useState(false);
+
   return (
     <>
-      <Drawer>
+      <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
           <button
             type="button"
+            aria-label="Filters"
             className="h-8 w-8 rounded-full bg-[#F0F0F0] text-black p-1 md:hidden"
           >
             <FiSliders className="text-base mx-auto" />
@@ -34,7 +39,7 @@ const MobileFilters = () => {
             <DrawerDescription className="hidden">filters</DrawerDescription>
           </DrawerHeader>
           <div className="max-h-[90%] overflow-y-auto w-full px-5 md:px-6 py-5 space-y-5 md:space-y-6">
-            <Filters />
+            <Filters onApply={() => setOpen(false)} />
           </div>
         </DrawerContent>
       </Drawer>

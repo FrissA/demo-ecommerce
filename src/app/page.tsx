@@ -17,6 +17,9 @@ export const newArrivalsData: Product[] = [
       amount: 0,
       percentage: 0,
     },
+    category: "t-shirts",
+    style: "casual",
+    colors: ["Blue", "Black", "White"],
     rating: 4.5,
   },
   {
@@ -29,6 +32,9 @@ export const newArrivalsData: Product[] = [
       amount: 0,
       percentage: 20,
     },
+    category: "jeans",
+    style: "casual",
+    colors: ["Blue", "Black"],
     rating: 3.5,
   },
   {
@@ -41,6 +47,9 @@ export const newArrivalsData: Product[] = [
       amount: 0,
       percentage: 0,
     },
+    category: "shirts",
+    style: "casual",
+    colors: ["Red", "Blue"],
     rating: 4.5,
   },
   {
@@ -53,6 +62,9 @@ export const newArrivalsData: Product[] = [
       amount: 0,
       percentage: 30,
     },
+    category: "t-shirts",
+    style: "casual",
+    colors: ["Brown", "Green", "Blue"],
     rating: 4.5,
   },
 ];
@@ -68,6 +80,9 @@ export const topSellingData: Product[] = [
       amount: 0,
       percentage: 20,
     },
+    category: "shirts",
+    style: "formal",
+    colors: ["Green", "White"],
     rating: 5.0,
   },
   {
@@ -80,6 +95,9 @@ export const topSellingData: Product[] = [
       amount: 0,
       percentage: 0,
     },
+    category: "t-shirts",
+    style: "casual",
+    colors: ["Brown", "Black"],
     rating: 4.0,
   },
   {
@@ -92,6 +110,9 @@ export const topSellingData: Product[] = [
       amount: 0,
       percentage: 0,
     },
+    category: "shorts",
+    style: "casual",
+    colors: ["Blue", "Brown"],
     rating: 3.0,
   },
   {
@@ -104,6 +125,9 @@ export const topSellingData: Product[] = [
       amount: 0,
       percentage: 0,
     },
+    category: "jeans",
+    style: "casual",
+    colors: ["Black", "Blue"],
     rating: 4.5,
   },
 ];
@@ -119,6 +143,9 @@ export const relatedProductData: Product[] = [
       amount: 0,
       percentage: 20,
     },
+    category: "shirts",
+    style: "formal",
+    colors: ["Blue", "White"],
     rating: 4.0,
   },
   {
@@ -131,6 +158,9 @@ export const relatedProductData: Product[] = [
       amount: 0,
       percentage: 0,
     },
+    category: "t-shirts",
+    style: "party",
+    colors: ["Brown", "Green"],
     rating: 3.5,
   },
   {
@@ -143,6 +173,9 @@ export const relatedProductData: Product[] = [
       amount: 0,
       percentage: 0,
     },
+    category: "shirts",
+    style: "casual",
+    colors: ["Blue", "Green"],
     rating: 4.5,
   },
   {
@@ -155,6 +188,9 @@ export const relatedProductData: Product[] = [
       amount: 0,
       percentage: 30,
     },
+    category: "t-shirts",
+    style: "gym",
+    colors: ["Black", "White"],
     rating: 5.0,
   },
 ];

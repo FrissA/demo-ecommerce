@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
 import {
   Accordion,
   AccordionContent,
@@ -8,10 +6,15 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
+import { SIZES } from "@/lib/catalog";
 
-const SizeSection = () => {
-  const [selected, setSelected] = useState<string>("Large");
-
+const SizeSection = ({
+  selected,
+  onSelect,
+}: {
+  selected?: string;
+  onSelect: (size: string) => void;
+}) => {
   return (
     <Accordion type="single" collapsible defaultValue="filter-size">
       <AccordionItem value="filter-size" className="border-none">
@@ -20,25 +23,16 @@ const SizeSection = () => {
         </AccordionTrigger>
         <AccordionContent className="pt-4 pb-0">
           <div className="flex items-center flex-wrap">
-            {[
-              "XX-Small",
-              "X-Small",
-              "Small",
-              "Medium",
-              "Large",
-              "X-Large",
-              "XX-Large",
-              "3X-Large",
-              "4X-Large",
-            ].map((size, index) => (
+            {SIZES.map((size) => (
               <button
-                key={index}
+                key={size}
                 type="button"
+                aria-pressed={selected === size}
                 className={cn([
                   "bg-[#F0F0F0] m-1 flex items-center justify-center px-5 py-2.5 text-sm rounded-full max-h-[39px]",
                   selected === size && "bg-black font-medium text-white",
                 ])}
-                onClick={() => setSelected(size)}
+                onClick={() => onSelect(size)}
               >
                 {size}
               </button>

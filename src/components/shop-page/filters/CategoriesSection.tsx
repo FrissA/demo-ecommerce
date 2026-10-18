@@ -1,43 +1,27 @@
 import Link from "next/link";
 import React from "react";
 import { MdKeyboardArrowRight } from "react-icons/md";
+import { CATEGORIES } from "@/lib/catalog";
+import { cn } from "@/lib/utils";
 
-type Category = {
-  title: string;
-  slug: string;
-};
-
-const categoriesData: Category[] = [
-  {
-    title: "T-shirts",
-    slug: "/shop?category=t-shirts",
-  },
-  {
-    title: "Shorts",
-    slug: "/shop?category=shorts",
-  },
-  {
-    title: "Shirts",
-    slug: "/shop?category=shirts",
-  },
-  {
-    title: "Hoodie",
-    slug: "/shop?category=hoodie",
-  },
-  {
-    title: "Jeans",
-    slug: "/shop?category=jeans",
-  },
-];
-
-const CategoriesSection = () => {
+const CategoriesSection = ({
+  selected,
+  linkWith,
+}: {
+  selected?: string;
+  linkWith: (key: string, value: string) => string;
+}) => {
   return (
     <div className="flex flex-col space-y-0.5 text-black/60">
-      {categoriesData.map((category, idx) => (
+      {CATEGORIES.map((category) => (
         <Link
-          key={idx}
-          href={category.slug}
-          className="flex items-center justify-between py-2"
+          key={category.slug}
+          href={linkWith("category", category.slug)}
+          aria-current={selected === category.slug ? "page" : undefined}
+          className={cn([
+            "flex items-center justify-between py-2",
+            selected === category.slug && "font-bold text-black",
+          ])}
         >
           {category.title} <MdKeyboardArrowRight />
         </Link>
