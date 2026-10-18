@@ -4,6 +4,7 @@ import { addToCart } from "@/lib/features/carts/cartsSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux";
 import { RootState } from "@/lib/store";
 import { Product } from "@/types/product.types";
+import Link from "next/link";
 import React, { useState } from "react";
 import { track } from "@/lib/analytics";
 
@@ -13,6 +14,7 @@ const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
     (state: RootState) => state.products,
   );
   const [error, setError] = useState(false);
+  const [added, setAdded] = useState(false);
 
   return (
     <div className="relative w-full ml-3 sm:ml-5">
@@ -24,6 +26,17 @@ const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
           Select a size above first
         </span>
       )}
+      {added && sizeSelection && (
+        <span
+          role="status"
+          className="absolute -top-7 left-0 rounded-full bg-white px-2 text-sm font-medium text-green-700"
+        >
+          Added to cart.{" "}
+          <Link href="/cart" className="text-black underline underline-offset-2">
+            View cart
+          </Link>
+        </span>
+      )}
       <button
         type="button"
         className="bg-black w-full rounded-full h-11 md:h-[52px] text-sm sm:text-base text-white hover:bg-black/80 transition-all"
@@ -33,6 +46,7 @@ const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
             has_size: !!sizeSelection,
           });
           if (!sizeSelection) {
+            setAdded(false);
             setError(true);
             document
               .getElementById("size-label")
@@ -50,6 +64,7 @@ const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
               quantity: data.quantity,
             }),
           );
+          setAdded(true);
           track("product_added", {
             product_id: data.id,
             size: sizeSelection,
