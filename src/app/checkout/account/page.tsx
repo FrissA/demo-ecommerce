@@ -19,21 +19,14 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Account, saveAccount } from "@/lib/account";
+import { Account, continueAsGuest, saveAccount } from "@/lib/account";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { integralCF } from "@/styles/fonts";
 
 const EMPTY: Account = {
   email: "",
-  username: "",
   password: "",
-  confirmPassword: "",
-  firstName: "",
-  lastName: "",
-  phone: "",
-  birthDate: "",
-  acceptTerms: false,
 };
 
 type Errors = Partial<Record<keyof Account, string>>;
@@ -41,17 +34,8 @@ type Errors = Partial<Record<keyof Account, string>>;
 const validate = (v: Account): Errors => {
   const errors: Errors = {};
   if (!/^\S+@\S+\.\S+$/.test(v.email)) errors.email = "Enter a valid email.";
-  if (!/^[a-z0-9_]{4,}$/i.test(v.username))
-    errors.username = "At least 4 letters, numbers or underscores.";
-  if (v.password.length < 8 || !/\d/.test(v.password))
-    errors.password = "At least 8 characters including a number.";
-  if (v.confirmPassword !== v.password)
-    errors.confirmPassword = "Passwords do not match.";
-  if (!v.firstName.trim()) errors.firstName = "Required.";
-  if (!v.lastName.trim()) errors.lastName = "Required.";
-  if (v.phone.replace(/\D/g, "").length < 7) errors.phone = "Enter a phone number.";
-  if (!v.birthDate) errors.birthDate = "Required.";
-  if (!v.acceptTerms) errors.acceptTerms = "You must accept the terms.";
+  if (v.password.length < 8)
+    errors.password = "Use at least 8 characters.";
   return errors;
 };
 
@@ -61,7 +45,7 @@ export default function CreateAccountPage() {
   const [errors, setErrors] = useState<Errors>({});
 
   const field = (
-    key: Exclude<keyof Account, "acceptTerms">,
+    key: keyof Account,
     label: string,
     props: React.ComponentProps<typeof Input> = {}
   ) => (
@@ -71,14 +55,23 @@ export default function CreateAccountPage() {
         id={key}
         name={key}
         value={values[key]}
-        onChange={(e) => setValues((prev) => ({ ...prev, [key]: e.target.value }))}
+        onChange={(e) => {
+          setValues((prev) => ({ ...prev, [key]: e.target.value }));
+          setErrors((prev) => ({ ...prev, [key]: undefined }));
+        }}
         aria-invalid={!!errors[key]}
+        aria-describedby={errors[key] ? `${key}-error` : undefined}
         className="h-11"
         {...props}
       />
-      <FieldError>{errors[key]}</FieldError>
+      <FieldError id={`${key}-error`}>{errors[key]}</FieldError>
     </Field>
   );
+
+  const handleGuest = () => {
+    continueAsGuest();
+    router.push("/checkout");
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,69 +89,67 @@ export default function CreateAccountPage() {
   return (
     <main className="pb-20">
       <div className="max-w-frame mx-auto px-4 xl:px-0">
-        <BreadcrumbCheckout current="Create account" />
+        <BreadcrumbCheckout current="Checkout" />
         <h2
           className={cn([
             integralCF.className,
             "font-bold text-[32px] md:text-[40px] text-black uppercase mb-5 md:mb-6",
           ])}
         >
-          create account
+          checkout
         </h2>
-        <Card className="w-full max-w-2xl rounded-[20px] border-black/10 shadow-none">
-          <form onSubmit={handleSubmit} noValidate>
+        <div className="flex w-full max-w-2xl flex-col gap-5">
+          <Card className="w-full rounded-[20px] border-black/10 shadow-none">
             <CardHeader>
               <CardTitle className="text-xl md:text-2xl font-bold">
-                Register to continue
+                Check out as a guest
               </CardTitle>
               <CardDescription>
-                An account is required to place an order.
+                No account needed. You only enter your shipping and payment
+                details.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <FieldGroup className="gap-5">
-                {field("email", "Email", { type: "email", autoComplete: "email" })}
-                {field("username", "Username", { autoComplete: "username" })}
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <CardFooter>
+              <Button
+                type="button"
+                onClick={handleGuest}
+                className="text-sm md:text-base font-medium rounded-full w-full min-h-[54px] md:min-h-[60px] h-auto py-3 whitespace-normal"
+              >
+                Continue as guest
+              </Button>
+            </CardFooter>
+          </Card>
+          <Card className="w-full rounded-[20px] border-black/10 shadow-none">
+            <form onSubmit={handleSubmit} noValidate>
+              <CardHeader>
+                <CardTitle className="text-xl md:text-2xl font-bold">
+                  Or create an account (optional)
+                </CardTitle>
+                <CardDescription>
+                  Just an email and a password.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FieldGroup className="gap-5">
+                  {field("email", "Email", { type: "email", autoComplete: "email" })}
                   {field("password", "Password", {
                     type: "password",
                     autoComplete: "new-password",
                   })}
-                  {field("confirmPassword", "Confirm password", {
-                    type: "password",
-                    autoComplete: "new-password",
-                  })}
-                  {field("firstName", "First name", { autoComplete: "given-name" })}
-                  {field("lastName", "Last name", { autoComplete: "family-name" })}
-                  {field("phone", "Phone", { type: "tel", autoComplete: "tel" })}
-                  {field("birthDate", "Date of birth", { type: "date" })}
-                </div>
-                <Field data-invalid={!!errors.acceptTerms}>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      id="acceptTerms"
-                      type="checkbox"
-                      checked={values.acceptTerms}
-                      onChange={(e) =>
-                        setValues((prev) => ({ ...prev, acceptTerms: e.target.checked }))
-                      }
-                    />
-                    I accept the terms of service and privacy policy
-                  </label>
-                  <FieldError>{errors.acceptTerms}</FieldError>
-                </Field>
-              </FieldGroup>
-            </CardContent>
-            <CardFooter>
-              <Button
-                type="submit"
-                className="text-sm md:text-base font-medium rounded-full w-full h-[54px] md:h-[60px]"
-              >
-                Create account
-              </Button>
-            </CardFooter>
-          </form>
-        </Card>
+                </FieldGroup>
+              </CardContent>
+              <CardFooter>
+                <Button
+                  type="submit"
+                  variant="outline"
+                  className="text-sm md:text-base font-medium rounded-full w-full min-h-[54px] md:min-h-[60px] h-auto py-3 whitespace-normal border-black"
+                >
+                  Create account and continue
+                </Button>
+              </CardFooter>
+            </form>
+          </Card>
+        </div>
       </div>
     </main>
   );

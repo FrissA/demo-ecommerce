@@ -15,6 +15,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -24,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import { ShippingInfo } from "@/lib/features/checkout/checkoutSlice";
 import { track } from "@/lib/analytics";
 
@@ -76,6 +78,7 @@ const ShippingForm = ({
     defaultValues ?? EMPTY_SHIPPING
   );
   const [errors, setErrors] = useState<Errors>({});
+  const [submitting, setSubmitting] = useState(false);
 
   const update =
     (key: keyof ShippingInfo) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -90,7 +93,10 @@ const ShippingForm = ({
       error_fields: Object.keys(nextErrors),
       promo_applied: promoApplied,
     });
-    if (Object.keys(nextErrors).length === 0) onSubmit(values);
+    if (Object.keys(nextErrors).length === 0) {
+      setSubmitting(true);
+      onSubmit(values);
+    }
   };
 
   const textField = (
@@ -163,13 +169,26 @@ const ShippingForm = ({
             </Field>
           </FieldGroup>
         </CardContent>
-        <CardFooter className="justify-end">
-          <button
+        <CardFooter className="sticky bottom-0 z-10 flex-col items-stretch gap-3 rounded-b-[20px] bg-white pt-4 md:static">
+          {Object.keys(errors).length > 0 && (
+            <p role="alert" className="text-sm font-medium text-red-600">
+              Please fix the highlighted fields above to continue.
+            </p>
+          )}
+          <Button
             type="submit"
-            className="text-[11px] text-[#c4c4c4] underline-offset-2 hover:underline"
+            disabled={submitting}
+            className="text-sm md:text-base font-medium rounded-full w-full min-h-[54px] md:min-h-[60px] h-auto py-3 gap-2 whitespace-normal"
           >
-            Continue to payment
-          </button>
+            {submitting ? (
+              <>
+                <Spinner />
+                Continuing to payment…
+              </>
+            ) : (
+              "Continue to payment"
+            )}
+          </Button>
         </CardFooter>
       </form>
     </Card>

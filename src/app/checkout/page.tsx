@@ -72,7 +72,7 @@ function Checkout() {
   // empty cart state while navigating to the result page
   const [processing, setProcessing] = useState(false);
 
-  // Checkout requires an account
+  // Shoppers pick guest checkout or an account first
   useEffect(() => {
     if (!hasAccount()) router.replace("/checkout/account");
   }, [router]);
