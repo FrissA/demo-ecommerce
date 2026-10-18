@@ -39,7 +39,7 @@ const MobileFilters = () => {
             <DrawerDescription className="hidden">filters</DrawerDescription>
           </DrawerHeader>
           <div className="max-h-[90%] overflow-y-auto w-full px-5 md:px-6 py-5 space-y-5 md:space-y-6">
-            <Filters onApply={() => setOpen(false)} />
+            <Filters onDone={() => setOpen(false)} />
           </div>
         </DrawerContent>
       </Drawer>

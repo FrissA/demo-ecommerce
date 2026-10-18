@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import CategoriesSection from "@/components/shop-page/filters/CategoriesSection";
 import ColorsSection from "@/components/shop-page/filters/ColorsSection";
@@ -12,59 +12,62 @@ import { parseShopParams } from "@/lib/shop-filters";
 import { PRICE_MAX, PRICE_MIN } from "@/lib/catalog";
 import Link from "next/link";
 
-// Category and style are links; price, color and size wait for "Apply Filter"
-const Filters = ({ onApply }: { onApply?: () => void }) => {
+// Every filter applies as soon as it's picked; in the mobile drawer,
+// "Show results" just closes it
+const Filters = ({ onDone }: { onDone?: () => void }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const current = parseShopParams(Object.fromEntries(searchParams.entries()));
 
-  const [price, setPrice] = useState<[number, number]>([current.minPrice, current.maxPrice]);
-  const [color, setColor] = useState(current.color);
-  const [size, setSize] = useState(current.size);
-
-  const linkWith = (key: string, value: string) => {
+  const withParams = (changes: Record<string, string | undefined>) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (params.get(key) === value) params.delete(key);
-    else params.set(key, value);
+    for (const [key, value] of Object.entries(changes)) {
+      if (value) params.set(key, value);
+      else params.delete(key);
+    }
     const qs = params.toString();
     return qs ? `${pathname}?${qs}` : pathname;
   };
-
-  const apply = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    const set = (key: string, value: string | undefined) =>
-      value ? params.set(key, value) : params.delete(key);
-    set("minPrice", price[0] > PRICE_MIN ? String(price[0]) : undefined);
-    set("maxPrice", price[1] < PRICE_MAX ? String(price[1]) : undefined);
-    set("color", color);
-    set("size", size);
-    router.push(`${pathname}?${params.toString()}`);
-    onApply?.();
-  };
+  const toggle = (key: string, value: string) =>
+    withParams({ [key]: searchParams.get(key) === value ? undefined : value });
+  const go = (href: string) => router.push(href, { scroll: false });
 
   return (
     <>
       <hr className="border-t-black/10" />
-      <CategoriesSection selected={current.category} linkWith={linkWith} />
+      <CategoriesSection selected={current.category} linkWith={toggle} />
       <hr className="border-t-black/10" />
-      <PriceSection value={price} onChange={setPrice} />
+      <PriceSection
+        key={`${current.minPrice}-${current.maxPrice}`}
+        value={[current.minPrice, current.maxPrice]}
+        onChange={([min, max]) =>
+          go(
+            withParams({
+              minPrice: min > PRICE_MIN ? String(min) : undefined,
+              maxPrice: max < PRICE_MAX ? String(max) : undefined,
+            })
+          )
+        }
+      />
       <hr className="border-t-black/10" />
-      <ColorsSection selected={color} onSelect={(c) => setColor(c === color ? undefined : c)} />
+      <ColorsSection selected={current.color} onSelect={(c) => go(toggle("color", c))} />
       <hr className="border-t-black/10" />
-      <SizeSection selected={size} onSelect={(s) => setSize(s === size ? undefined : s)} />
+      <SizeSection selected={current.size} onSelect={(s) => go(toggle("size", s))} />
       <hr className="border-t-black/10" />
-      <DressStyleSection selected={current.style} linkWith={linkWith} />
-      <Button
-        type="button"
-        onClick={apply}
-        className="bg-black w-full rounded-full text-sm font-medium py-4 h-12"
-      >
-        Apply Filter
-      </Button>
+      <DressStyleSection selected={current.style} linkWith={toggle} />
+      {onDone && (
+        <Button
+          type="button"
+          onClick={onDone}
+          className="bg-black w-full rounded-full text-sm font-medium py-4 h-12"
+        >
+          Show results
+        </Button>
+      )}
       <Link
         href={pathname}
-        onClick={onApply}
+        onClick={onDone}
         className="block text-center text-sm text-black/60 underline"
       >
         Clear all filters
