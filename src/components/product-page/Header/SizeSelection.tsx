@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux";
 import { RootState } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import React from "react";
-import { FaChevronDown } from "react-icons/fa6";
 import { track } from "@/lib/analytics";
 
 const SizeSelection = ({ productId }: { productId: number }) => {
@@ -16,35 +15,32 @@ const SizeSelection = ({ productId }: { productId: number }) => {
 
   return (
     <div className="flex flex-col">
-      <span className="text-sm sm:text-base text-black/60 mb-4">
+      <span id="size-label" className="text-sm sm:text-base text-black/60 mb-4">
         Choose Size
       </span>
-      {/* Sizes open on hover */}
-      <div className="group relative w-fit">
-        <div className="flex items-center gap-3 bg-[#F0F0F0] px-5 py-2.5 rounded-full text-sm lg:text-base cursor-default">
-          {sizeSelection || "Size"}
-          <FaChevronDown className="text-xs" />
-        </div>
-        <div className="absolute left-0 top-full z-20 hidden pt-2 group-hover:flex">
-          <div className="flex gap-2 rounded-2xl bg-white p-2 shadow-lg border border-black/10">
-            {["Small", "Medium", "Large", "X-Large"].map((size) => (
-              <button
-                key={size}
-                type="button"
-                className={cn([
-                  "bg-[#F0F0F0] px-4 py-2 text-sm rounded-full whitespace-nowrap",
-                  sizeSelection === size && "bg-black font-medium text-white",
-                ])}
-                onClick={() => {
-                  dispatch(setSizeSelection(size));
-                  track("size_selected", { product_id: productId, size });
-                }}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        </div>
+      <div
+        role="radiogroup"
+        aria-labelledby="size-label"
+        className="flex items-center flex-wrap lg:space-x-3"
+      >
+        {["Small", "Medium", "Large", "X-Large"].map((size) => (
+          <button
+            key={size}
+            type="button"
+            role="radio"
+            aria-checked={sizeSelection === size}
+            className={cn([
+              "bg-[#F0F0F0] flex items-center justify-center px-5 lg:px-6 py-2.5 lg:py-3 text-sm lg:text-base rounded-full m-1 lg:m-0 max-h-[46px] border border-black/20 hover:bg-black/10",
+              sizeSelection === size && "bg-black font-medium text-white hover:bg-black",
+            ])}
+            onClick={() => {
+              dispatch(setSizeSelection(size));
+              track("size_selected", { product_id: productId, size });
+            }}
+          >
+            {size}
+          </button>
+        ))}
       </div>
     </div>
   );
