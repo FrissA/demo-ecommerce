@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -58,12 +59,22 @@ const validate = (v: Account): Errors => {
 export default function CreateAccountPage() {
   const router = useRouter();
   const [values, setValues] = useState<Account>(EMPTY);
-  const [errors, setErrors] = useState<Errors>({});
+  // Errors show per field once it has been left (or after a submit attempt)
+  // and then update live as the shopper types.
+  const [touched, setTouched] = useState<Partial<Record<keyof Account, boolean>>>({});
+  const allErrors = validate(values);
+  const errors: Errors = Object.fromEntries(
+    Object.entries(allErrors).filter(([key]) => touched[key as keyof Account])
+  );
+
+  const touch = (key: keyof Account) =>
+    setTouched((prev) => (prev[key] ? prev : { ...prev, [key]: true }));
 
   const field = (
     key: Exclude<keyof Account, "acceptTerms">,
     label: string,
-    props: React.ComponentProps<typeof Input> = {}
+    props: React.ComponentProps<typeof Input> = {},
+    hint?: string
   ) => (
     <Field data-invalid={!!errors[key]}>
       <FieldLabel htmlFor={key}>{label}</FieldLabel>
@@ -72,23 +83,35 @@ export default function CreateAccountPage() {
         name={key}
         value={values[key]}
         onChange={(e) => setValues((prev) => ({ ...prev, [key]: e.target.value }))}
+        onBlur={() => touch(key)}
         aria-invalid={!!errors[key]}
+        aria-describedby={
+          [hint && `${key}-hint`, errors[key] && `${key}-error`]
+            .filter(Boolean)
+            .join(" ") || undefined
+        }
         className="h-11"
         {...props}
       />
-      <FieldError>{errors[key]}</FieldError>
+      {hint && <FieldDescription id={`${key}-hint`}>{hint}</FieldDescription>}
+      <FieldError id={`${key}-error`}>{errors[key]}</FieldError>
     </Field>
   );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const nextErrors = validate(values);
-    setErrors(nextErrors);
+    setTouched(
+      Object.fromEntries(Object.keys(EMPTY).map((key) => [key, true]))
+    );
     track("account_submitted", {
       success: Object.keys(nextErrors).length === 0,
       error_fields: Object.keys(nextErrors),
     });
-    if (Object.keys(nextErrors).length > 0) return;
+    if (Object.keys(nextErrors).length > 0) {
+      document.getElementById(Object.keys(nextErrors)[0])?.focus();
+      return;
+    }
     saveAccount(values);
     router.push("/checkout");
   };
@@ -118,12 +141,19 @@ export default function CreateAccountPage() {
             <CardContent>
               <FieldGroup className="gap-5">
                 {field("email", "Email", { type: "email", autoComplete: "email" })}
-                {field("username", "Username", { autoComplete: "username" })}
+                {field(
+                  "username",
+                  "Username",
+                  { autoComplete: "username" },
+                  "At least 4 letters, numbers or underscores."
+                )}
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                  {field("password", "Password", {
-                    type: "password",
-                    autoComplete: "new-password",
-                  })}
+                  {field(
+                    "password",
+                    "Password",
+                    { type: "password", autoComplete: "new-password" },
+                    "At least 8 characters including a number."
+                  )}
                   {field("confirmPassword", "Confirm password", {
                     type: "password",
                     autoComplete: "new-password",
@@ -139,9 +169,12 @@ export default function CreateAccountPage() {
                       id="acceptTerms"
                       type="checkbox"
                       checked={values.acceptTerms}
-                      onChange={(e) =>
-                        setValues((prev) => ({ ...prev, acceptTerms: e.target.checked }))
-                      }
+                      onChange={(e) => {
+                        setValues((prev) => ({ ...prev, acceptTerms: e.target.checked }));
+                        touch("acceptTerms");
+                      }}
+                      aria-invalid={!!errors.acceptTerms}
+                      className="size-5"
                     />
                     I accept the terms of service and privacy policy
                   </label>
