@@ -15,6 +15,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -163,13 +164,14 @@ const ShippingForm = ({
             </Field>
           </FieldGroup>
         </CardContent>
-        <CardFooter className="justify-end">
-          <button
+        {/* Sticky on mobile so the button stays in view on long forms */}
+        <CardFooter className="sticky bottom-0 z-10 bg-white rounded-b-[20px] border-t border-black/10 pt-4 md:static md:border-none md:pt-0">
+          <Button
             type="submit"
-            className="text-[11px] text-[#c4c4c4] underline-offset-2 hover:underline"
+            className="text-sm md:text-base font-medium bg-black text-white rounded-full w-full min-h-[54px] md:min-h-[60px] h-auto py-3 whitespace-normal"
           >
             Continue to payment
-          </button>
+          </Button>
         </CardFooter>
       </form>
     </Card>

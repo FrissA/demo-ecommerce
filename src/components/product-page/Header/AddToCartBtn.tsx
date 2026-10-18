@@ -17,7 +17,10 @@ const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
   return (
     <div className="relative w-full ml-3 sm:ml-5">
       {error && !sizeSelection && (
-        <span className="absolute -top-6 left-0 text-sm text-red-600">
+        <span
+          role="alert"
+          className="absolute bottom-full left-0 mb-2 rounded-full bg-white px-3 py-1 text-sm font-medium text-red-700 border border-red-700"
+        >
           Please select a size
         </span>
       )}
@@ -31,6 +34,9 @@ const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
           });
           if (!sizeSelection) {
             setError(true);
+            document
+              .getElementById("size-selection")
+              ?.scrollIntoView({ behavior: "smooth", block: "center" });
             return;
           }
           dispatch(
