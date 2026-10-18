@@ -78,6 +78,11 @@ const ResTopNavbar = ({ data }: { data: NavMenu }) => {
               )}
             </React.Fragment>
           ))}
+          <SheetClose asChild>
+            <Link href="/cart" className="mb-4 font-bold">
+              View cart &amp; checkout
+            </Link>
+          </SheetClose>
         </div>
       </SheetContent>
     </Sheet>

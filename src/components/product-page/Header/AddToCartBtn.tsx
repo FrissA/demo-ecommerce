@@ -6,6 +6,7 @@ import { RootState } from "@/lib/store";
 import { Product } from "@/types/product.types";
 import React, { useState } from "react";
 import { track } from "@/lib/analytics";
+import Link from "next/link";
 
 const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
   const dispatch = useAppDispatch();
@@ -13,6 +14,7 @@ const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
     (state: RootState) => state.products,
   );
   const [error, setError] = useState(false);
+  const [added, setAdded] = useState(false);
 
   return (
     <div className="relative w-full ml-3 sm:ml-5">
@@ -26,7 +28,7 @@ const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
       )}
       <button
         type="button"
-        className="bg-black w-full rounded-full h-11 md:h-[52px] text-sm sm:text-base text-white hover:bg-black/80 transition-all"
+        className="bg-black w-full rounded-full h-12 md:h-[52px] text-base font-bold text-white hover:bg-black/80 transition-all"
         onClick={() => {
           track("add_to_cart_clicked", {
             product_id: data.id,
@@ -54,10 +56,22 @@ const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
             quantity: data.quantity,
             price: data.price,
           });
+          setAdded(true);
         }}
       >
-        Add to Cart
+        {added ? "Added to cart ✓" : "Add to Cart"}
       </button>
+      {added && (
+        <div role="status" className="mt-2">
+          <span className="sr-only">Added to your cart.</span>
+          <Link
+            href="/cart"
+            className="flex items-center justify-center w-full h-12 md:h-[52px] rounded-full border-2 border-black bg-white text-base font-bold text-black hover:bg-black hover:text-white transition-all"
+          >
+            View cart &amp; checkout
+          </Link>
+        </div>
+      )}
     </div>
   );
 };

@@ -20,10 +20,16 @@ const CategoriesSection = ({
           aria-current={selected === category.slug ? "page" : undefined}
           className={cn([
             "flex items-center justify-between py-2",
-            selected === category.slug && "font-bold text-black",
+            selected === category.slug &&
+              "font-bold text-black bg-[#F0F0F0] rounded-lg px-2",
           ])}
         >
-          {category.title} <MdKeyboardArrowRight />
+          {category.title}
+          {selected === category.slug ? (
+            <span className="text-sm">Selected ✓</span>
+          ) : (
+            <MdKeyboardArrowRight />
+          )}
         </Link>
       ))}
     </div>

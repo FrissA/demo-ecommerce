@@ -81,7 +81,7 @@ const TopNavbar = () => {
             href="/"
             className={cn([
               integralCF.className,
-              "text-2xl lg:text-[32px] mb-2 mr-3 lg:mr-10",
+              "text-xl sm:text-2xl lg:text-[32px] mb-2 mr-3 lg:mr-10",
             ])}
           >
             SHOP.CO
@@ -130,17 +130,17 @@ const TopNavbar = () => {
         <div className="flex items-center">
           <Link
             href="/shop#shop-search"
-            aria-label="Search"
-            className="block md:hidden mr-[14px] p-1"
+            className="flex md:hidden flex-col items-center mr-3 p-1 text-xs font-medium"
           >
             <Image
               priority
               src="/icons/search-black.svg"
               height={100}
               width={100}
-              alt="search"
+              alt=""
               className="max-w-[22px] max-h-[22px]"
             />
+            Search
           </Link>
           <CartBtn />
           <Link href="/#signin" className="p-1">
