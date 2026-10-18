@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ShippingInfo } from "@/lib/features/checkout/checkoutSlice";
+import { getAccountEmail } from "@/lib/account";
 import { track } from "@/lib/analytics";
 
 const COUNTRIES = [
@@ -78,6 +79,11 @@ const ShippingForm = ({
   );
   const [errors, setErrors] = useState<Errors>({});
 
+  useEffect(() => {
+    const email = getAccountEmail();
+    if (email) setValues((prev) => (prev.email ? prev : { ...prev, email }));
+  }, []);
+
   const update =
     (key: keyof ShippingInfo) => (e: React.ChangeEvent<HTMLInputElement>) =>
       setValues((prev) => ({ ...prev, [key]: e.target.value }));
@@ -109,7 +115,7 @@ const ShippingForm = ({
         onChange={update(key)}
         aria-invalid={!!errors[key]}
         aria-describedby={errors[key] ? `${key}-error` : undefined}
-        className="h-11"
+        className="h-11 scroll-mt-24 scroll-mb-40"
         {...props}
       />
       <FieldError id={`${key}-error`}>{errors[key]}</FieldError>

@@ -22,7 +22,17 @@ export const hasAccount = () => {
   }
 };
 
-export const saveAccount = (account: Account) => {
+// The email the shopper already typed on the account step, so shipping does
+// not ask them to type it again
+export const getAccountEmail = (): string => {
+  try {
+    return JSON.parse(sessionStorage.getItem(KEY) ?? "{}").email ?? "";
+  } catch {
+    return "";
+  }
+};
+
+export const saveAccount =(account: Account) => {
   const { password, confirmPassword, ...profile } = account;
   try {
     sessionStorage.setItem(KEY, JSON.stringify(profile));

@@ -24,10 +24,16 @@ const SizeSelection = ({ productId }: { productId: number }) => {
         aria-labelledby="size-label"
         className="flex items-center flex-wrap gap-2 sm:gap-3"
       >
-        {["Small", "Medium", "Large", "X-Large"].map((size) => (
+        {[
+          { size: "Small", short: "S" },
+          { size: "Medium", short: "M" },
+          { size: "Large", short: "L" },
+          { size: "X-Large", short: "XL" },
+        ].map(({ size, short }) => (
           <button
             key={size}
             type="button"
+            aria-label={`${short} (${size})`}
             aria-pressed={sizeSelection === size}
             className={cn([
               "bg-[#F0F0F0] min-h-11 px-5 py-2.5 text-sm lg:text-base rounded-full whitespace-nowrap border-2 border-transparent",
@@ -39,7 +45,8 @@ const SizeSelection = ({ productId }: { productId: number }) => {
               track("size_selected", { product_id: productId, size });
             }}
           >
-            {size}
+            <span className="font-bold">{short}</span>{" "}
+            <span className="text-xs lg:text-sm opacity-80">{size}</span>
           </button>
         ))}
       </div>
