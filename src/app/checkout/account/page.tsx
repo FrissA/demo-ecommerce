@@ -40,18 +40,10 @@ type Errors = Partial<Record<keyof Account, string>>;
 
 const validate = (v: Account): Errors => {
   const errors: Errors = {};
-  if (!/^\S+@\S+\.\S+$/.test(v.email)) errors.email = "Enter a valid email.";
-  if (!/^[a-z0-9_]{4,}$/i.test(v.username))
-    errors.username = "At least 4 letters, numbers or underscores.";
-  if (v.password.length < 8 || !/\d/.test(v.password))
-    errors.password = "At least 8 characters including a number.";
-  if (v.confirmPassword !== v.password)
-    errors.confirmPassword = "Passwords do not match.";
-  if (!v.firstName.trim()) errors.firstName = "Required.";
-  if (!v.lastName.trim()) errors.lastName = "Required.";
-  if (v.phone.replace(/\D/g, "").length < 7) errors.phone = "Enter a phone number.";
-  if (!v.birthDate) errors.birthDate = "Required.";
-  if (!v.acceptTerms) errors.acceptTerms = "You must accept the terms.";
+  if (!/^\S+@\S+\.\S+$/.test(v.email.trim()))
+    errors.email = "Enter a valid email address, like name@example.com.";
+  if (v.password.length < 8)
+    errors.password = "Use at least 8 characters.";
   return errors;
 };
 
@@ -71,12 +63,16 @@ export default function CreateAccountPage() {
         id={key}
         name={key}
         value={values[key]}
-        onChange={(e) => setValues((prev) => ({ ...prev, [key]: e.target.value }))}
+        onChange={(e) => {
+          setValues((prev) => ({ ...prev, [key]: e.target.value }));
+          if (errors[key]) setErrors((prev) => ({ ...prev, [key]: undefined }));
+        }}
         aria-invalid={!!errors[key]}
+        aria-describedby={errors[key] ? `${key}-error` : undefined}
         className="h-11"
         {...props}
       />
-      <FieldError>{errors[key]}</FieldError>
+      <FieldError id={`${key}-error`}>{errors[key]}</FieldError>
     </Field>
   );
 
@@ -112,41 +108,24 @@ export default function CreateAccountPage() {
                 Register to continue
               </CardTitle>
               <CardDescription>
-                An account is required to place an order.
+                Just an email and password to place your order.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <FieldGroup className="gap-5">
                 {field("email", "Email", { type: "email", autoComplete: "email" })}
-                {field("username", "Username", { autoComplete: "username" })}
+                {field("password", "Password (at least 8 characters)", {
+                  type: "password",
+                  autoComplete: "new-password",
+                })}
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                  {field("password", "Password", {
-                    type: "password",
-                    autoComplete: "new-password",
+                  {field("firstName", "First name (optional)", {
+                    autoComplete: "given-name",
                   })}
-                  {field("confirmPassword", "Confirm password", {
-                    type: "password",
-                    autoComplete: "new-password",
+                  {field("lastName", "Last name (optional)", {
+                    autoComplete: "family-name",
                   })}
-                  {field("firstName", "First name", { autoComplete: "given-name" })}
-                  {field("lastName", "Last name", { autoComplete: "family-name" })}
-                  {field("phone", "Phone", { type: "tel", autoComplete: "tel" })}
-                  {field("birthDate", "Date of birth", { type: "date" })}
                 </div>
-                <Field data-invalid={!!errors.acceptTerms}>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      id="acceptTerms"
-                      type="checkbox"
-                      checked={values.acceptTerms}
-                      onChange={(e) =>
-                        setValues((prev) => ({ ...prev, acceptTerms: e.target.checked }))
-                      }
-                    />
-                    I accept the terms of service and privacy policy
-                  </label>
-                  <FieldError>{errors.acceptTerms}</FieldError>
-                </Field>
               </FieldGroup>
             </CardContent>
             <CardFooter>
