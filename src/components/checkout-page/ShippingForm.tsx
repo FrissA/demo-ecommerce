@@ -15,6 +15,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -163,13 +164,13 @@ const ShippingForm = ({
             </Field>
           </FieldGroup>
         </CardContent>
-        <CardFooter className="justify-end">
-          <button
+        <CardFooter>
+          <Button
             type="submit"
-            className="text-[11px] text-[#c4c4c4] underline-offset-2 hover:underline"
+            className="text-sm md:text-base font-medium bg-black text-white rounded-full w-full h-auto min-h-[54px] md:min-h-[60px] py-3 whitespace-normal"
           >
             Continue to payment
-          </button>
+          </Button>
         </CardFooter>
       </form>
     </Card>

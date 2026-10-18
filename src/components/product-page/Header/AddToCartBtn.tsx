@@ -15,10 +15,10 @@ const AddToCartBtn = ({ data }: { data: Product & { quantity: number } }) => {
   const [error, setError] = useState(false);
 
   return (
-    <div className="relative w-full ml-3 sm:ml-5">
+    <div className="flex flex-col gap-1 w-full ml-3 sm:ml-5">
       {error && !sizeSelection && (
-        <span className="absolute -top-6 left-0 text-sm text-red-600">
-          Please select a size
+        <span role="alert" className="text-sm font-medium text-red-700">
+          Select a size above before adding to cart
         </span>
       )}
       <button

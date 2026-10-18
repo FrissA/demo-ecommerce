@@ -26,14 +26,7 @@ import { integralCF } from "@/styles/fonts";
 
 const EMPTY: Account = {
   email: "",
-  username: "",
   password: "",
-  confirmPassword: "",
-  firstName: "",
-  lastName: "",
-  phone: "",
-  birthDate: "",
-  acceptTerms: false,
 };
 
 type Errors = Partial<Record<keyof Account, string>>;
@@ -41,17 +34,7 @@ type Errors = Partial<Record<keyof Account, string>>;
 const validate = (v: Account): Errors => {
   const errors: Errors = {};
   if (!/^\S+@\S+\.\S+$/.test(v.email)) errors.email = "Enter a valid email.";
-  if (!/^[a-z0-9_]{4,}$/i.test(v.username))
-    errors.username = "At least 4 letters, numbers or underscores.";
-  if (v.password.length < 8 || !/\d/.test(v.password))
-    errors.password = "At least 8 characters including a number.";
-  if (v.confirmPassword !== v.password)
-    errors.confirmPassword = "Passwords do not match.";
-  if (!v.firstName.trim()) errors.firstName = "Required.";
-  if (!v.lastName.trim()) errors.lastName = "Required.";
-  if (v.phone.replace(/\D/g, "").length < 7) errors.phone = "Enter a phone number.";
-  if (!v.birthDate) errors.birthDate = "Required.";
-  if (!v.acceptTerms) errors.acceptTerms = "You must accept the terms.";
+  if (v.password.length < 8) errors.password = "At least 8 characters.";
   return errors;
 };
 
@@ -61,7 +44,7 @@ export default function CreateAccountPage() {
   const [errors, setErrors] = useState<Errors>({});
 
   const field = (
-    key: Exclude<keyof Account, "acceptTerms">,
+    key: keyof Account,
     label: string,
     props: React.ComponentProps<typeof Input> = {}
   ) => (
@@ -109,52 +92,35 @@ export default function CreateAccountPage() {
           <form onSubmit={handleSubmit} noValidate>
             <CardHeader>
               <CardTitle className="text-xl md:text-2xl font-bold">
-                Register to continue
+                Create an account (optional)
               </CardTitle>
               <CardDescription>
-                An account is required to place an order.
+                Save your details for next time, or continue as a guest.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <FieldGroup className="gap-5">
                 {field("email", "Email", { type: "email", autoComplete: "email" })}
-                {field("username", "Username", { autoComplete: "username" })}
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                  {field("password", "Password", {
-                    type: "password",
-                    autoComplete: "new-password",
-                  })}
-                  {field("confirmPassword", "Confirm password", {
-                    type: "password",
-                    autoComplete: "new-password",
-                  })}
-                  {field("firstName", "First name", { autoComplete: "given-name" })}
-                  {field("lastName", "Last name", { autoComplete: "family-name" })}
-                  {field("phone", "Phone", { type: "tel", autoComplete: "tel" })}
-                  {field("birthDate", "Date of birth", { type: "date" })}
-                </div>
-                <Field data-invalid={!!errors.acceptTerms}>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      id="acceptTerms"
-                      type="checkbox"
-                      checked={values.acceptTerms}
-                      onChange={(e) =>
-                        setValues((prev) => ({ ...prev, acceptTerms: e.target.checked }))
-                      }
-                    />
-                    I accept the terms of service and privacy policy
-                  </label>
-                  <FieldError>{errors.acceptTerms}</FieldError>
-                </Field>
+                {field("password", "Password", {
+                  type: "password",
+                  autoComplete: "new-password",
+                })}
               </FieldGroup>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex-col gap-3">
               <Button
                 type="submit"
                 className="text-sm md:text-base font-medium rounded-full w-full h-[54px] md:h-[60px]"
               >
                 Create account
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="text-sm md:text-base font-medium rounded-full w-full h-[54px] md:h-[60px] border-black text-black"
+                onClick={() => router.push("/checkout")}
+              >
+                Continue as guest
               </Button>
             </CardFooter>
           </form>
