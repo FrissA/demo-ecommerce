@@ -12,7 +12,7 @@ import { parseShopParams } from "@/lib/shop-filters";
 import { PRICE_MAX, PRICE_MIN } from "@/lib/catalog";
 import Link from "next/link";
 
-// Category and style are links; price, color and size wait for "Apply Filter"
+// Category and style are links; color and size apply on tap; price waits for "Apply Filter"
 const Filters = ({ onApply }: { onApply?: () => void }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -31,17 +31,31 @@ const Filters = ({ onApply }: { onApply?: () => void }) => {
     return qs ? `${pathname}?${qs}` : pathname;
   };
 
-  const apply = () => {
+  const apply = (picked: { color?: string; size?: string } = { color, size }) => {
     const params = new URLSearchParams(searchParams.toString());
     const set = (key: string, value: string | undefined) =>
       value ? params.set(key, value) : params.delete(key);
     set("minPrice", price[0] > PRICE_MIN ? String(price[0]) : undefined);
     set("maxPrice", price[1] < PRICE_MAX ? String(price[1]) : undefined);
-    set("color", color);
-    set("size", size);
+    set("color", picked.color);
+    set("size", picked.size);
     router.push(`${pathname}?${params.toString()}`);
-    onApply?.();
   };
+
+  // Tapping a color or size updates the results right away
+  const pickColor = (c: string) => {
+    const next = c === color ? undefined : c;
+    setColor(next);
+    apply({ color: next, size });
+  };
+  const pickSize = (s: string) => {
+    const next = s === size ? undefined : s;
+    setSize(next);
+    apply({ color, size: next });
+  };
+
+  // Clearing filters keeps what the shopper searched for
+  const clearHref = current.q ? `${pathname}?${new URLSearchParams({ q: current.q })}` : pathname;
 
   return (
     <>
@@ -50,21 +64,28 @@ const Filters = ({ onApply }: { onApply?: () => void }) => {
       <hr className="border-t-black/10" />
       <PriceSection value={price} onChange={setPrice} />
       <hr className="border-t-black/10" />
-      <ColorsSection selected={color} onSelect={(c) => setColor(c === color ? undefined : c)} />
+      <ColorsSection selected={color} onSelect={pickColor} />
       <hr className="border-t-black/10" />
-      <SizeSection selected={size} onSelect={(s) => setSize(s === size ? undefined : s)} />
+      <SizeSection selected={size} onSelect={pickSize} />
       <hr className="border-t-black/10" />
       <DressStyleSection selected={current.style} linkWith={linkWith} />
       <Button
         type="button"
-        onClick={apply}
+        onClick={() => {
+          apply();
+          onApply?.();
+        }}
         className="bg-black w-full rounded-full text-sm font-medium py-4 h-12"
       >
         Apply Filter
       </Button>
       <Link
-        href={pathname}
-        onClick={onApply}
+        href={clearHref}
+        onClick={() => {
+          setColor(undefined);
+          setSize(undefined);
+          onApply?.();
+        }}
         className="block text-center text-sm text-black/60 underline"
       >
         Clear all filters

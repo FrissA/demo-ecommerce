@@ -20,6 +20,17 @@ export default function ShopPage({ searchParams }: { searchParams: ShopParams })
     : (CATEGORIES.find((c) => c.slug === filters.category)?.title ??
       STYLES.find((s) => s.slug === filters.style)?.title ??
       "All products");
+  const categoryTitle = CATEGORIES.find((c) => c.slug === filters.category)?.title;
+  const noMatchMessage = [
+    "No products found",
+    filters.q && `for "${filters.q}"`,
+    filters.color && `in ${filters.color.toLowerCase()}`,
+    categoryTitle && `in ${categoryTitle}`,
+    filters.size && `in size ${filters.size}`,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .concat(".");
 
   return (
     <main className="pb-20">
@@ -42,8 +53,8 @@ export default function ShopPage({ searchParams }: { searchParams: ShopParams })
                 <MobileFilters />
               </div>
               <div className="flex flex-col sm:items-center sm:flex-row">
-                <span className="text-sm md:text-base text-black/60 mr-3">
-                  Showing {products.length} of {allProducts.length} products
+                <span role="status" className="text-sm md:text-base text-black/60 mr-3">
+                  {products.length} {products.length === 1 ? "product" : "products"} found
                 </span>
                 <SortSelect value={filters.sort} />
               </div>
@@ -56,10 +67,20 @@ export default function ShopPage({ searchParams }: { searchParams: ShopParams })
               </div>
             ) : (
               <div className="py-16 text-center text-black/60">
-                <p className="mb-4">No products match these filters.</p>
-                <Link href="/shop" className="font-medium text-black underline">
-                  Clear filters
-                </Link>
+                <p className="mb-4 text-black text-lg">{noMatchMessage}</p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  {filters.q && (
+                    <Link
+                      href={`/shop?${new URLSearchParams({ q: filters.q })}`}
+                      className="font-medium text-black underline"
+                    >
+                      Clear filters, keep search
+                    </Link>
+                  )}
+                  <Link href="/shop" className="font-medium text-black underline">
+                    See all products
+                  </Link>
+                </div>
               </div>
             )}
           </div>

@@ -34,7 +34,7 @@ export const newArrivalsData: Product[] = [
     },
     category: "jeans",
     style: "casual",
-    colors: ["Blue", "Black"],
+    colors: ["Blue", "Black", "Green"],
     rating: 3.5,
   },
   {
@@ -127,7 +127,7 @@ export const topSellingData: Product[] = [
     },
     category: "jeans",
     style: "casual",
-    colors: ["Black", "Blue"],
+    colors: ["Black", "Blue", "Green"],
     rating: 4.5,
   },
 ];
