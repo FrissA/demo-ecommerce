@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -91,6 +92,7 @@ const ShippingForm = ({
       promo_applied: promoApplied,
     });
     if (Object.keys(nextErrors).length === 0) onSubmit(values);
+    else document.getElementById(Object.keys(nextErrors)[0])?.focus();
   };
 
   const textField = (
@@ -106,10 +108,11 @@ const ShippingForm = ({
         value={values[key]}
         onChange={update(key)}
         aria-invalid={!!errors[key]}
+        aria-describedby={errors[key] ? `${key}-error` : undefined}
         className="h-11"
         {...props}
       />
-      <FieldError>{errors[key]}</FieldError>
+      <FieldError id={`${key}-error`}>{errors[key]}</FieldError>
     </Field>
   );
 
@@ -163,13 +166,18 @@ const ShippingForm = ({
             </Field>
           </FieldGroup>
         </CardContent>
-        <CardFooter className="justify-end">
-          <button
+        <CardFooter className="sticky bottom-0 z-10 flex-col items-stretch gap-3 rounded-b-[20px] bg-white pt-4">
+          {Object.keys(errors).length > 0 && (
+            <p role="alert" className="text-sm font-medium text-red-700">
+              Please fix the highlighted fields above to continue.
+            </p>
+          )}
+          <Button
             type="submit"
-            className="text-[11px] text-[#c4c4c4] underline-offset-2 hover:underline"
+            className="text-sm md:text-base font-medium rounded-full w-full min-h-[54px] md:min-h-[60px] h-auto py-3"
           >
             Continue to payment
-          </button>
+          </Button>
         </CardFooter>
       </form>
     </Card>
